@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1MinTrim — 1분 영상 무료 트림 도구 (브라우저에서 바로)</title>
+<meta name="description" content="회원가입, 업로드 없이 브라우저에서 바로 영상을 자르는 무료 온라인 도구. 최대 1분 영상을 드래그로 간단히 트림하고 다운로드하세요.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="logo">1Min<span>Trim</span></a>
+    <nav class="site-nav">
+      <a href="#how">사용법</a>
+      <a href="#faq">FAQ</a>
+      <a href="about.html">소개</a>
+      <a href="privacy.html">개인정보처리방침</a>
+      <a href="contact.html">문의</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>1분 영상, 빠르게 잘라서 다운로드</h1>
+      <p class="hero-sub">업로드도, 회원가입도, 서버 전송도 없습니다. 모든 처리는 당신의 브라우저 안에서만 일어납니다.</p>
+    </div>
+  </section>
+
+  <section class="tool-section">
+    <div class="container">
+      <div id="drop-zone" class="drop-zone">
+        <input type="file" id="file-input" accept="video/*" hidden>
+        <div class="drop-zone-content">
+          <svg class="upload-icon" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 16V4M12 4l-4 4M12 4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p><strong>영상을 여기에 드래그</strong>하거나 클릭해서 선택하세요</p>
+          <p class="drop-hint">최대 1분(60초) 영상만 지원합니다</p>
+        </div>
+      </div>
+
+      <div id="editor" class="editor hidden">
+        <video id="preview" controls></video>
+
+        <div class="timeline-wrap">
+          <div id="timeline" class="timeline">
+            <div id="track-fill" class="track-fill"></div>
+            <div id="handle-start" class="handle handle-start" tabindex="0" role="slider" aria-label="시작점"></div>
+            <div id="handle-end" class="handle handle-end" tabindex="0" role="slider" aria-label="끝점"></div>
+          </div>
+          <div class="timeline-labels">
+            <span id="label-start">0.0s</span>
+            <span id="label-duration">구간: 0.0s</span>
+            <span id="label-end">0.0s</span>
+          </div>
+        </div>
+
+        <div class="controls-row">
+          <button id="btn-add-clip" class="btn btn-primary">이 구간을 시퀀스에 추가</button>
+          <button id="btn-reset" class="btn btn-ghost">새 영상 선택</button>
+        </div>
+      </div>
+
+      <div id="sequence-panel" class="sequence-panel hidden">
+        <h3>시퀀스 (최종 영상)</h3>
+        <p class="sequence-hint">여러 영상에서 자른 구간을 순서대로 이어붙여 하나의 영상으로 만듭니다. 합친 총 길이는 60초를 넘을 수 없습니다.</p>
+
+        <div id="sequence-track" class="sequence-track"></div>
+        <div id="sequence-total" class="sequence-total">총 0.0s / 60s</div>
+
+        <ul id="sequence-list" class="sequence-list"></ul>
+
+        <div class="controls-row">
+          <button id="btn-add-more" class="btn btn-ghost">영상 더 추가하기</button>
+          <button id="btn-export-final" class="btn btn-primary" disabled>최종 영상 만들기</button>
+          <button id="btn-clear-sequence" class="btn btn-ghost">시퀀스 초기화</button>
+        </div>
+      </div>
+
+      <div id="status" class="status" aria-live="polite"></div>
+      <div id="progress-wrap" class="progress-wrap hidden">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+
+      <div id="error-box" class="error-box hidden"></div>
+    </div>
+  </section>
+
+  <section id="how" class="content-section">
+    <div class="container narrow">
+      <h2>사용법</h2>
+      <ol class="steps">
+        <li><strong>영상 업로드</strong> — 위 영역에 영상 파일을 드래그하거나 클릭해서 선택하세요. 60초를 넘는 영상은 처리할 수 없습니다.</li>
+        <li><strong>구간 선택</strong> — 타임라인 아래의 두 핸들을 드래그해서 시작점과 끝점을 지정하세요. 미리보기 영상으로 결과를 바로 확인할 수 있습니다.</li>
+        <li><strong>다운로드</strong> — "트림해서 다운로드" 버튼을 누르면 브라우저 안에서 잘라낸 구간만 새 파일로 만들어 즉시 다운로드됩니다.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="content-section alt">
+    <div class="container narrow">
+      <h2>왜 만들었나요</h2>
+      <p>짧은 영상 클립 하나를 자르려고 무거운 편집 프로그램을 설치하거나, 회원가입까지 해야 하는 웹 서비스에 영상을 업로드하는 게 번거로워서 만들었습니다. 1MinTrim은 딱 한 가지 일만 합니다 — 1분 이하 영상을 원하는 구간만 잘라내는 것. 그 외 기능은 일부러 넣지 않았습니다.</p>
+      <p>모든 처리는 <strong>브라우저 내부</strong>에서 WebAssembly로 동작하는 ffmpeg를 이용해 이루어집니다. 영상 파일이 외부 서버로 전송되지 않으며, 페이지를 닫으면 아무것도 남지 않습니다.</p>
+    </div>
+  </section>
+
+  <section id="faq" class="content-section">
+    <div class="container narrow">
+      <h2>자주 묻는 질문</h2>
+
+      <div class="faq-item">
+        <h3>영상이 서버에 업로드되나요?</h3>
+        <p>아니요. 모든 트림 작업은 사용자의 브라우저 안에서 ffmpeg.wasm을 통해 처리됩니다. 영상 파일은 한 번도 외부로 전송되지 않습니다.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>왜 1분 넘는 영상은 안 되나요?</h3>
+        <p>브라우저에서 동작하는 클라이언트 사이드 처리 특성상 긴 영상은 메모리와 처리 시간 부담이 커집니다. 짧은 클립을 빠르게 자르는 용도에 맞춰 1분으로 제한했습니다.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>화질 손상 없이 자를 수 있나요?</h3>
+        <p>가능하면 재인코딩 없이 키프레임 단위로 무손실 트림을 시도합니다. 다만 선택한 구간이 키프레임과 정확히 맞지 않으면 정밀도를 위해 재인코딩 방식으로 자동 전환될 수 있습니다.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>어떤 영상 형식을 지원하나요?</h3>
+        <p>대부분의 브라우저가 재생할 수 있는 형식(MP4, WebM, MOV 등)을 지원합니다. 출력은 MP4로 제공됩니다.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>여러 영상을 합치거나 효과를 넣을 수 있나요?</h3>
+        <p>아니요. 1MinTrim은 트림(자르기) 기능 하나에만 집중합니다. 다른 편집 기능은 지원하지 않습니다.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>비용이 드나요?</h3>
+        <p>아니요. 완전히 무료이며 가입 절차도 없습니다.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; 2026 1MinTrim. 모든 영상 처리는 브라우저 내에서만 이루어집니다.</p>
+    <nav>
+      <a href="about.html">소개</a>
+      <a href="privacy.html">개인정보처리방침</a>
+      <a href="contact.html">문의</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="vendor/ffmpeg/ffmpeg.js"></script>
+<script src="vendor/util/index.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사이트 소개 — 1MinTrim</title>
+<meta name="description" content="1MinTrim 소개: 1분 영상을 브라우저에서 바로 자르는 무료 도구를 만든 이유와 동작 방식.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="logo">1Min<span>Trim</span></a>
+    <nav class="site-nav">
+      <a href="/#how">사용법</a>
+      <a href="/#faq">FAQ</a>
+      <a href="about.html">소개</a>
+      <a href="privacy.html">개인정보처리방침</a>
+      <a href="contact.html">문의</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page-content">
+  <div class="container narrow">
+    <h1>1MinTrim 소개</h1>
+    <p>1MinTrim은 최대 1분 길이의 영상을 빠르게 잘라내기 위한 무료 온라인 도구입니다. 회원가입이나 설치 없이, 브라우저를 여는 즉시 사용할 수 있습니다.</p>
+
+    <h2>만든 이유</h2>
+    <p>짧은 영상 클립 하나를 자르려고 무거운 편집 프로그램을 켜거나, 회원가입까지 요구하는 클라우드 서비스에 영상을 업로드하는 과정이 번거롭다고 느꼈습니다. 그래서 딱 한 가지 기능 — 트림(자르기) — 만 빠르고 정확하게 해내는 도구를 만들었습니다.</p>
+
+    <h2>어떻게 동작하나요</h2>
+    <p>1MinTrim은 <strong>ffmpeg.wasm</strong>이라는 기술을 사용해, 영상 처리를 사용자의 브라우저 안에서 직접 수행합니다. 영상 파일이 서버로 전송되는 과정이 전혀 없습니다. 가능한 경우 재인코딩 없는 무손실 트림을 우선 시도하며, 정밀도가 필요한 경우에만 재인코딩으로 전환합니다.</p>
+
+    <h2>앞으로의 방향</h2>
+    <p>1MinTrim은 의도적으로 기능을 최소한으로 유지합니다. 멀티클립 합성, 필터, 텍스트 삽입 같은 기능은 추가하지 않을 계획입니다. "1분 영상을 정확하게 자른다"는 단 하나의 목적에 집중합니다.</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; 2026 1MinTrim. 모든 영상 처리는 브라우저 내에서만 이루어집니다.</p>
+    <nav>
+      <a href="about.html">소개</a>
+      <a href="privacy.html">개인정보처리방침</a>
+      <a href="contact.html">문의</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

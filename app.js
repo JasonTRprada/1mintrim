@@ -261,10 +261,10 @@
       progressWrap.classList.remove("hidden");
       progressBar.style.width = Math.min(100, Math.round(progress * 100)) + "%";
     });
-    const baseURL = "vendor/core";
+    const cdnBaseURL = `https://unpkg.com/@ffmpeg/core@${CORE_VERSION}/dist/umd`;
     await ffmpeg.load({
-      coreURL: await FFmpegUtil.toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-      wasmURL: await FFmpegUtil.toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
+      coreURL: await FFmpegUtil.toBlobURL("vendor/core/ffmpeg-core.js", "text/javascript"),
+      wasmURL: await FFmpegUtil.toBlobURL(`${cdnBaseURL}/ffmpeg-core.wasm`, "application/wasm"),
     });
     ffmpegLoaded = true;
   }

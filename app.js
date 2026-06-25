@@ -1,5 +1,7 @@
 (() => {
-  const MAX_DURATION = 60; // seconds
+  const MAX_SOURCE_SIZE = 300 * 1024 * 1024; // 300MB
+  const MAX_CLIP_DURATION = 60;  // seconds per clip
+  const MAX_OUTPUT_DURATION = 300; // seconds total sequence (5 min)
   const CORE_VERSION = "0.12.6";
 
   const dropZone = document.getElementById("drop-zone");
@@ -73,13 +75,13 @@
 
   function renderSequence() {
     const total = sequenceTotalDuration();
-    sequenceTotal.textContent = `총 ${fmtTime(total)} / ${MAX_DURATION}s`;
+    sequenceTotal.textContent = `총 ${fmtTime(total)} / ${MAX_OUTPUT_DURATION}s`;
 
     sequenceTrack.innerHTML = "";
     sequence.forEach((clip, i) => {
       const block = document.createElement("div");
       block.className = "sequence-block";
-      block.style.width = Math.max(2, (clip.duration / MAX_DURATION) * 100) + "%";
+      block.style.width = Math.max(2, (clip.duration / MAX_OUTPUT_DURATION) * 100) + "%";
       block.textContent = i + 1;
       sequenceTrack.appendChild(block);
     });
@@ -123,6 +125,10 @@
       showError("영상 파일만 업로드할 수 있습니다.");
       return;
     }
+    if (file.size > MAX_SOURCE_SIZE) {
+      showError(`파일이 너무 큽니다 (${(file.size / 1024 / 1024).toFixed(1)}MB). 최대 300MB까지만 지원합니다.`);
+      return;
+    }
     const url = URL.createObjectURL(file);
     const tempVideo = document.createElement("video");
     tempVideo.preload = "metadata";
@@ -131,13 +137,6 @@
       const duration = tempVideo.duration;
       if (!isFinite(duration) || duration <= 0) {
         showError("영상 길이를 읽을 수 없습니다. 다른 파일을 시도해주세요.");
-        URL.revokeObjectURL(url);
-        return;
-      }
-      if (duration > MAX_DURATION) {
-        showError(
-          `영상이 너무 길어요 (${duration.toFixed(1)}초). 최대 ${MAX_DURATION}초까지만 지원합니다.`
-        );
         URL.revokeObjectURL(url);
         return;
       }
@@ -273,10 +272,14 @@
     if (!currentFile) return;
     clearError();
     const duration = trimEnd - trimStart;
+    if (duration > MAX_CLIP_DURATION + 0.05) {
+      showError(`한 구간은 최대 ${MAX_CLIP_DURATION}초까지만 선택할 수 있습니다. (현재 ${fmtTime(duration)})`);
+      return;
+    }
     const projectedTotal = sequenceTotalDuration() + duration;
-    if (projectedTotal > MAX_DURATION + 0.05) {
+    if (projectedTotal > MAX_OUTPUT_DURATION + 0.05) {
       showError(
-        `시퀀스 총 길이가 ${MAX_DURATION}초를 넘을 수 없습니다. (현재 ${fmtTime(sequenceTotalDuration())} + 이 구간 ${fmtTime(duration)})`
+        `시퀀스 총 길이가 5분을 넘을 수 없습니다. (현재 ${fmtTime(sequenceTotalDuration())} + 이 구간 ${fmtTime(duration)})`
       );
       return;
     }

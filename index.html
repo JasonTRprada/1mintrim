@@ -62,7 +62,7 @@
             <path d="M12 16V4M12 4l-4 4M12 4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <p><strong>영상을 여기에 드래그</strong>하거나 클릭해서 선택하세요</p>
-          <p class="drop-hint">최대 1분(60초) 영상만 지원합니다</p>
+          <p class="drop-hint">최대 300MB · 구간당 최대 1분 · 총 출력 최대 5분</p>
         </div>
       </div>
 
@@ -90,7 +90,7 @@
 
       <div id="sequence-panel" class="sequence-panel hidden">
         <h3>시퀀스 (최종 영상)</h3>
-        <p class="sequence-hint">여러 영상에서 자른 구간을 순서대로 이어붙여 하나의 영상으로 만듭니다. 합친 총 길이는 60초를 넘을 수 없습니다.</p>
+        <p class="sequence-hint">여러 영상에서 자른 구간을 순서대로 이어붙여 하나의 영상으로 만듭니다. 구간당 최대 1분, 합친 총 길이는 5분을 넘을 수 없습니다.</p>
 
         <div id="sequence-track" class="sequence-track"></div>
         <div id="sequence-total" class="sequence-total">총 0.0s / 60s</div>
@@ -117,7 +117,7 @@
     <div class="container narrow">
       <h2>사용법</h2>
       <ol class="steps">
-        <li><strong>영상 업로드</strong> — 위 영역에 영상 파일을 드래그하거나 클릭해서 선택하세요. 60초를 넘는 영상은 처리할 수 없습니다.</li>
+        <li><strong>영상 업로드</strong> — 위 영역에 영상 파일을 드래그하거나 클릭해서 선택하세요. 300MB 이하 영상을 지원합니다.</li>
         <li><strong>구간 선택</strong> — 타임라인 아래의 두 핸들을 드래그해서 시작점과 끝점을 지정하세요. 미리보기 영상으로 결과를 바로 확인할 수 있습니다.</li>
         <li><strong>다운로드</strong> — "트림해서 다운로드" 버튼을 누르면 브라우저 안에서 잘라낸 구간만 새 파일로 만들어 즉시 다운로드됩니다.</li>
       </ol>
@@ -142,8 +142,8 @@
       </div>
 
       <div class="faq-item">
-        <h3>왜 1분 넘는 영상은 안 되나요?</h3>
-        <p>브라우저에서 동작하는 클라이언트 사이드 처리 특성상 긴 영상은 메모리와 처리 시간 부담이 커집니다. 짧은 클립을 빠르게 자르는 용도에 맞춰 1분으로 제한했습니다.</p>
+        <h3>소스 영상 길이 제한이 있나요?</h3>
+        <p>소스 영상 길이 제한은 없습니다. 300MB 이하라면 긴 영상에서도 원하는 구간을 잘라낼 수 있습니다. 단, 구간 하나는 최대 1분, 이어붙인 총 출력은 최대 5분입니다.</p>
       </div>
 
       <div class="faq-item">

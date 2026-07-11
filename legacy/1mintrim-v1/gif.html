@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1330473842911061"
+     crossorigin="anonymous"></script>
+<title>GIF 생성기 — 영상을 GIF로 변환 | 1MinTrim</title>
+<meta name="description" content="회원가입, 업로드 없이 브라우저에서 바로 영상 구간을 GIF로 변환하는 무료 온라인 도구. 순방향/부메랑 재생 선택 가능.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="logo">1Min<span>Trim</span></a>
+    <nav class="site-nav">
+      <a href="/">영상 트림</a>
+      <a href="ico.html">ICO 생성</a>
+      <a href="audio.html">오디오 추출</a>
+      <a href="about.html">소개</a>
+      <a href="contact.html">문의</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>영상 구간을 GIF로 변환</h1>
+      <p class="hero-sub">최대 10초 구간을 골라 GIF로 만듭니다. 모든 처리는 브라우저 안에서만 일어납니다.</p>
+    </div>
+  </section>
+
+  <section class="tool-section">
+    <div class="container">
+      <div id="drop-zone" class="drop-zone">
+        <input type="file" id="file-input" accept="video/*" hidden>
+        <div class="drop-zone-content">
+          <svg class="upload-icon" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 16V4M12 4l-4 4M12 4l4 4M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <p><strong>영상을 여기에 드래그</strong>하거나 클릭해서 선택하세요</p>
+          <p class="drop-hint">최대 1분 영상, 최대 30MB까지 지원합니다</p>
+        </div>
+      </div>
+
+      <div id="editor" class="editor hidden">
+        <video id="preview" controls></video>
+
+        <div class="timeline-wrap">
+          <div id="timeline" class="timeline">
+            <div id="track-fill" class="track-fill"></div>
+            <div id="handle-start" class="handle handle-start" tabindex="0" role="slider" aria-label="시작점"></div>
+            <div id="handle-end" class="handle handle-end" tabindex="0" role="slider" aria-label="끝점"></div>
+          </div>
+          <div class="timeline-labels">
+            <span id="label-start">0.0s</span>
+            <span id="label-duration">구간: 0.0s (최대 10.0s)</span>
+            <span id="label-end">0.0s</span>
+          </div>
+        </div>
+
+        <div class="direction-row">
+          <label class="radio-label">
+            <input type="radio" name="direction" value="forward" checked>
+            <span class="arrow-symbol">A → B</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="direction" value="boomerang">
+            <span class="arrow-symbol">A ⇄ B</span>
+          </label>
+        </div>
+
+        <div class="controls-row">
+          <button id="btn-convert" class="btn btn-primary">GIF로 변환</button>
+          <button id="btn-reset" class="btn btn-ghost">새 영상 선택</button>
+        </div>
+      </div>
+
+      <div id="status" class="status" aria-live="polite"></div>
+      <div id="progress-wrap" class="progress-wrap hidden">
+        <div id="progress-bar" class="progress-bar"></div>
+      </div>
+
+      <div id="error-box" class="error-box hidden"></div>
+    </div>
+  </section>
+
+  <section id="how" class="content-section">
+    <div class="container narrow">
+      <h2>사용법</h2>
+      <ol class="steps">
+        <li><strong>영상 업로드</strong> — 최대 1분, 30MB 이하 영상만 가능합니다.</li>
+        <li><strong>구간 선택</strong> — 타임라인에서 GIF로 만들 구간을 고르세요. 최대 10초까지 선택할 수 있습니다.</li>
+        <li><strong>재생 방향 선택</strong> — 일반 순방향(A → B) 또는 갔다가 되돌아오는 부메랑(A ⇄ B) 중 선택하세요.</li>
+        <li><strong>변환</strong> — "GIF로 변환" 버튼을 누르면 브라우저 안에서 GIF 파일이 만들어져 바로 다운로드됩니다.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="faq" class="content-section alt">
+    <div class="container narrow">
+      <h2>자주 묻는 질문</h2>
+
+      <div class="faq-item">
+        <h3>왜 10초로 제한하나요?</h3>
+        <p>GIF는 영상보다 압축 효율이 낮아서 길이가 늘어날수록 파일 용량이 급격히 커집니다. 공유하기 좋은 크기를 유지하기 위해 10초로 제한했습니다.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>부메랑(A ⇄ B)이 뭔가요?</h3>
+        <p>선택한 구간을 정방향으로 재생한 뒤 역방향으로 한 번 더 재생해서 자연스럽게 왔다 갔다 하는 루프 효과를 만드는 기능입니다.</p>
+      </div>
+
+      <div class="faq-item">
+        <h3>영상이 서버에 업로드되나요?</h3>
+        <p>아니요. 모든 변환 작업은 브라우저 안에서 ffmpeg.wasm을 통해 처리됩니다.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p>&copy; 2026 1MinTrim. 모든 영상 처리는 브라우저 내에서만 이루어집니다.</p>
+    <nav>
+      <a href="about.html">소개</a>
+      <a href="privacy.html">개인정보처리방침</a>
+      <a href="contact.html">문의</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="vendor/ffmpeg/ffmpeg.js"></script>
+<script src="vendor/util/index.js"></script>
+<script src="gif.js"></script>
+</body>
+</html>

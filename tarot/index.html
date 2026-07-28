@@ -1,1 +1,118 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Paws Arcana - Three Card Reading</title><link rel="stylesheet" href="styles.css"></head><body><div class="app-shell"><aside class="sidebar"><div class="brand"><span class="brand-mark">✦</span><div><strong>Paws Arcana</strong><small>pastel dream tarot</small></div></div><nav><a class="active" href="#reading">⌂ <span>Today's fortune</span></a><a href="#reading">◌ <span>Tarot reading</span></a><a href="#archive">◷ <span>Reading archive</span></a></nav><div class="sidebar-foot"><span class="paw">🐾</span><p>Take a breath.<br>Listen to your intuition.</p></div></aside><main class="main-content" id="reading"><header class="topbar"><div><span class="eyebrow">THREE CARD READING</span><h1>A story for today</h1></div><button class="icon-button" aria-label="Settings">⚙</button></header><section class="reading-layout"><div class="table-panel"><div class="reading-intro"><div><span class="step-label">01 · CARD DRAW</span><h2>Hold your question gently</h2><p>Explore the flow of your past, present, and future.</p></div><div class="counter"><strong id="count">0</strong><span>/ 3 cards</span></div></div><div class="shuffle-stage" id="shuffleStage"><span class="shuffle-deck">🐾</span><span id="shuffleMessage">Shuffling the cards...</span></div><div class="spread" id="spread"><button class="slot" data-position="Past"><span class="slot-number">01</span><span class="card-back">🐾</span><small>Past</small></button><button class="slot" data-position="Present"><span class="slot-number">02</span><span class="card-back">🐾</span><small>Present</small></button><button class="slot" data-position="Future"><span class="slot-number">03</span><span class="card-back">🐾</span><small>Future</small></button></div><div class="deck-controls"><button class="primary" id="drawButton">Draw a card <span>→</span></button><button class="secondary" id="resetButton">Shuffle again</button><span class="hint" id="actionHint">Draw a card to begin</span></div></div><aside class="insight-panel"><span class="step-label">YOUR READING</span><div id="insightEmpty" class="insight-empty"><span class="moon">☾</span><h3>Your reading<br>will appear here</h3><p>Choose three cards<br>to reveal your message.</p></div><div id="insight" class="insight hidden"><span class="insight-badge">Your central message</span><h3 id="insightTitle">—</h3><p id="insightText">—</p><div class="keywords" id="keywords"></div></div></aside></section></main></div><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paws Arcana &mdash; Cat Tarot &amp; Fortune</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+  <style>
+    :root { --ink:#423757; --lav:#8370a8; --cream:#fffaf4; --peach:#f8e8dc; --line:#e9d8d0; --gold:#d4ad79; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--cream); font-family:"DM Sans","Noto Sans KR","Malgun Gothic",sans-serif; }
+    .shell { overflow:hidden; background:radial-gradient(circle at 70% 9%, #f5eafb 0, transparent 23rem), linear-gradient(180deg,#fffdf9 0,#fff8f1 100%); }
+    .nav { height:88px; max-width:1480px; margin:auto; padding:0 44px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--line); }
+    .brand { display:flex; gap:11px; align-items:center; font-family:"Playfair Display",serif; font-size:24px; letter-spacing:-1px; }
+    .paw { width:27px; height:27px; color:#8e75ae; font-size:27px; line-height:1; }
+    .nav-links { display:flex; gap:34px; font-size:14px; }
+    .nav-links a { color:inherit; text-decoration:none; }
+    .button { border:0; border-radius:999px; background:var(--lav); color:white; padding:13px 22px; font:500 14px "DM Sans",sans-serif; box-shadow:inset 0 0 0 1px rgba(255,255,255,.45); }
+    .hero { max-width:1480px; margin:auto; min-height:620px; padding:76px 44px 38px; display:grid; grid-template-columns:38% 62%; align-items:center; }
+    .eyebrow { color:#a77e85; font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; }
+    h1 { margin:18px 0; max-width:510px; font:500 clamp(48px,5.5vw,84px)/.98 "Playfair Display",serif; letter-spacing:-.06em; }
+    .intro { max-width:390px; font-size:17px; line-height:1.75; color:#6b6179; }
+    .ghost { display:inline-block; margin-top:23px; border:1px solid #b59cc6; border-radius:999px; padding:13px 21px; color:#705b8e; text-decoration:none; font-size:14px; }
+    .hero-deck { height:510px; position:relative; display:flex; align-items:center; justify-content:center; }
+    .hero-deck::before { content:""; position:absolute; width:620px; height:330px; border-radius:50%; border:1px solid #efdbca; background:radial-gradient(ellipse,rgba(255,255,255,.9),transparent 67%); }
+    .card { overflow:hidden; position:relative; border-radius:15px; background:#e8d9d2; box-shadow:0 18px 35px rgba(79,51,88,.19),0 2px 4px rgba(79,51,88,.18); }
+    .card img { display:block; width:100%; height:100%; object-fit:cover; }
+    .hero-card { position:absolute; width:258px; aspect-ratio:2/3; }
+    .hero-card.left { transform:translateX(-205px) rotate(-9deg); z-index:1; opacity:.98; }
+    .hero-card.center { width:300px; transform:translateY(-7px); z-index:3; }
+    .hero-card.right { transform:translateX(220px) rotate(9deg); z-index:2; }
+    .archive { background:linear-gradient(90deg,#f3eaf8,#faf0e8 55%,#f3eaf8); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+    .archive-inner { max-width:1480px; margin:auto; padding:55px 44px 62px; }
+    .section-head { display:flex; justify-content:space-between; align-items:end; margin-bottom:32px; }
+    h2 { margin:0; font:500 43px/1 "Playfair Display",serif; letter-spacing:-.05em; }
+    .section-head p { margin:0; color:#776a83; font-size:14px; }
+    .archive-grid { display:grid; grid-template-columns:1.6fr repeat(4,1fr); gap:20px; align-items:end; }
+    .archive-feature { min-height:386px; padding:25px; border:1px solid rgba(213,174,122,.55); border-radius:22px; background:rgba(255,255,255,.4); display:flex; align-items:center; gap:23px; }
+    .archive-feature .card { flex:0 0 190px; aspect-ratio:2/3; }
+    .feature-copy small,.mini label { color:#af8776; font-weight:700; letter-spacing:.12em; font-size:10px; text-transform:uppercase; }
+    .feature-copy h3 { margin:8px 0 9px; font:500 31px/1.08 "Playfair Display",serif; }
+    .feature-copy p { font-size:13px; line-height:1.65; color:#6d6375; }
+    .mini .card { width:100%; aspect-ratio:2/3; }
+    .mini h3 { margin:12px 0 0; font:500 19px "Playfair Display",serif; }
+    .mini p { margin:3px 0 0; color:#84758c; font-size:12px; }
+    .reading { max-width:1480px; margin:auto; padding:70px 44px 88px; display:grid; grid-template-columns:31% 69%; align-items:center; }
+    .reading p { max-width:320px; color:#6d6375; line-height:1.7; }
+    .reading-cards { display:flex; justify-content:center; gap:28px; }
+    .reading-cards .card { width:178px; aspect-ratio:2/3; transform:rotate(-5deg); }
+    .reading-cards .card:nth-child(2) { transform:translateY(-19px); }
+    .reading-cards .card:nth-child(3) { transform:rotate(5deg); }
+    @media (max-width:900px) { .nav { padding:0 20px; }.nav-links{display:none}.hero{grid-template-columns:1fr;padding:54px 23px 30px}.hero-deck{margin-top:34px;height:420px;transform:scale(.78);transform-origin:center}.archive-inner,.reading{padding-left:23px;padding-right:23px}.archive-grid{grid-template-columns:repeat(2,1fr)}.archive-feature{grid-column:span 2}.reading{grid-template-columns:1fr}.reading-cards{margin-top:35px;gap:12px}.reading-cards .card{width:29vw} }
+    .full-archive { background:#fffdf9; border-top:1px solid var(--line); }
+    .full-archive-inner { max-width:1480px; margin:auto; padding:78px 44px 96px; }
+    .filter-row { display:flex; flex-wrap:wrap; gap:9px; margin:32px 0; }
+    .filter { border:1px solid #dfcdd7; background:#fff; color:#715f7d; border-radius:999px; padding:10px 16px; font:500 13px "DM Sans","Noto Sans KR","Malgun Gothic",sans-serif; cursor:pointer; }
+    .filter.active,.filter:hover { background:var(--lav); color:#fff; border-color:var(--lav); }
+    .card-gallery { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); column-gap:22px; row-gap:34px; }
+    .gallery-card { border:0; background:none; padding:0; text-align:left; color:inherit; cursor:pointer; }
+    .gallery-card .card { display:block; width:100%; aspect-ratio:2/3; transition:transform .22s ease,box-shadow .22s ease; }
+    .gallery-card:hover .card { transform:translateY(-8px); box-shadow:0 23px 32px rgba(79,51,88,.25); }
+    .gallery-card h3 { margin:11px 0 3px; font:500 19px/1.05 "Playfair Display",serif; }
+    .gallery-card p { margin:0; color:#88778f; font-size:11px; }
+    .text-button { font-family:"DM Sans","Noto Sans KR","Malgun Gothic",sans-serif; background:transparent; cursor:pointer; }
+    .card-dialog { width:min(760px,calc(100vw - 36px)); border:0; border-radius:24px; padding:28px; display:none; grid-template-columns:270px 1fr; gap:30px; align-items:center; color:var(--ink); background:#fffaf4; box-shadow:0 24px 80px rgba(55,37,63,.35); }
+    .card-dialog[open] { display:grid; }.card-dialog::backdrop { background:rgba(42,31,52,.48); backdrop-filter:blur(4px); }.card-dialog img { width:100%; border-radius:14px; box-shadow:0 15px 26px rgba(75,54,78,.2); }.card-dialog h2 { margin:10px 0 14px; }.card-dialog p { color:#6c6278; line-height:1.75; }.dialog-close { position:absolute; right:16px; top:13px; border:0; background:none; color:#8e7e92; font-size:30px; cursor:pointer; }
+    @media(max-width:900px) { .full-archive-inner{padding-left:23px;padding-right:23px}.card-gallery{grid-template-columns:repeat(3,1fr)}.card-dialog{grid-template-columns:1fr;max-height:90vh;overflow:auto}.card-dialog img{max-width:230px;margin:auto} }  </style>
+</head>
+<body>
+  <main class="shell">
+    <nav class="nav">
+      <div class="brand"><span class="paw">&#10022;</span><span>Paws Arcana</span></div>
+      <div class="nav-links"><a href="#deck">Deck</a><a href="#reading">Reading</a><a href="#guide">Guide</a><a href="#about">About</a></div>
+      <button class="button">Start a reading</button>
+    </nav>
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Cat tarot &amp; fortune</div>
+        <h1>A gentle deck for clear-hearted questions.</h1>
+        <p class="intro">78장의 고양이 타로가 오늘의 마음을 조용히 비춰줍니다. 카드를 천천히 보고, 질문을 고르고, 나만의 리딩을 시작해보세요.</p>
+        <a class="ghost" href="#deck">Explore the deck&nbsp; &#10022;</a>
+      </div>
+      <div class="hero-deck" aria-label="Paws Arcana featured cards">
+        <figure class="card hero-card left"><img src="assets/cards/major_02_the_high_priestess.jpg" alt="The High Priestess"></figure>
+        <figure class="card hero-card center"><img src="assets/cards/major_06_the_lovers.jpg" alt="The Lovers"></figure>
+        <figure class="card hero-card right"><img src="assets/cards/major_19_the_sun.jpg" alt="The Sun"></figure>
+      </div>
+    </section>
+    <section class="archive" id="deck">
+      <div class="archive-inner">
+        <header class="section-head"><div><div class="eyebrow">Card archive</div><h2>The complete 78-card deck</h2></div><p>실제 카드 원화를 크게 감상하는 공간</p></header>
+        <div class="archive-grid">
+          <article class="archive-feature"><figure class="card"><img src="assets/cards/major_00_the_fool.jpg" alt="The Fool"></figure><div class="feature-copy"><small>00 / Major Arcana</small><h3>The Fool</h3><p>덱의 시작을 알리는 한 장. 웹에서는 작은 아이콘이 아니라 원화의 디테일까지 읽히도록 크게 보여줍니다.</p><button class="ghost text-button" type="button" data-open-card="major_00_the_fool">View card &rarr;</button></div></article>
+          <article class="mini"><figure class="card"><img src="assets/cards/major_17_the_star.jpg" alt="The Star"></figure><h3>The Star</h3><p>Major Arcana &middot; XVII</p></article>
+          <article class="mini"><figure class="card"><img src="assets/cards/cups_01_ace.jpg" alt="Ace of Cups"></figure><h3>Ace of Cups</h3><p>Cups &middot; I</p></article>
+          <article class="mini"><figure class="card"><img src="assets/cards/pentacles_01_ace.jpg" alt="Ace of Pentacles"></figure><h3>Ace of Pentacles</h3><p>Pentacles &middot; I</p></article>
+          <article class="mini"><figure class="card"><img src="assets/cards/swords_01_ace.jpg" alt="Ace of Swords"></figure><h3>Ace of Swords</h3><p>Swords &middot; I</p></article>
+        </div>
+      </div>
+    </section>
+    <section class="reading" id="reading">
+      <div><div class="eyebrow">Three-card reading</div><h2>Past, present, future.</h2><p>앱의 리딩 플로우는 그대로 두되, 웹에서는 넓은 화면과 큰 카드로 한 장면처럼 경험합니다.</p><button class="button">Draw your cards</button></div>
+      <div class="reading-cards"><figure class="card"><img src="assets/cards/wands_01_ace.jpg" alt="Ace of Wands"></figure><figure class="card"><img src="assets/cards/major_06_the_lovers.jpg" alt="The Lovers"></figure><figure class="card"><img src="assets/cards/swords_01_ace.jpg" alt="Ace of Swords"></figure></div>
+    </section>    </main>
+    <section class="full-archive" id="all-cards">
+      <div class="full-archive-inner">
+        <header class="section-head archive-heading"><div><div class="eyebrow">All cards</div><h2>Explore every card</h2></div><p>78장의 원화를 수트별로 천천히 둘러보세요.</p></header>
+        <div class="filter-row" role="group" aria-label="카드 수트 필터">
+          <button class="filter active" type="button" data-filter="all">All 78</button><button class="filter" type="button" data-filter="major">Major</button><button class="filter" type="button" data-filter="cups">Cups</button><button class="filter" type="button" data-filter="pentacles">Pentacles</button><button class="filter" type="button" data-filter="swords">Swords</button><button class="filter" type="button" data-filter="wands">Wands</button>
+        </div>
+        <div class="card-gallery" id="cardGallery" aria-live="polite"></div>
+      </div>
+    </section>
+    <dialog class="card-dialog" id="cardDialog"><button class="dialog-close" type="button" aria-label="닫기">&times;</button><img id="dialogImage" src="" alt=""><div><span id="dialogSuit" class="eyebrow"></span><h2 id="dialogTitle"></h2><p id="dialogDescription"></p></div></dialog>
+    <script src="paws-arcana-site.js"></script></body>
+</html>

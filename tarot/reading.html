@@ -83,30 +83,11 @@
     .reading-slot { min-height:420px; border:0; border-radius:18px; padding:13px; color:var(--ink); background:transparent; font:inherit; cursor:pointer; }.reading-slot:disabled{cursor:default}.reading-slot .slot-label{display:block;margin:0 0 12px;color:#9d7781;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}.card-back,.reading-slot .card{width:100%;max-width:220px;aspect-ratio:2/3;margin:auto;border-radius:15px}.card-back{display:grid;place-items:center;background:linear-gradient(145deg,#8c74ad,#63527e);box-shadow:0 18px 32px rgba(79,51,88,.22);border:7px solid #e7d5b6;outline:1px solid #b69872;color:#fff;font:500 43px/1 "Playfair Display",serif}.reading-slot:hover .card-back{transform:translateY(-6px);transition:transform .2s ease}.reading-slot .card{overflow:hidden;box-shadow:0 18px 32px rgba(79,51,88,.2)}.reading-slot .card img{width:100%;height:100%;object-fit:cover}.slot-title{display:block;margin:12px auto 0;font:500 22px/1.1 "Playfair Display",serif}.slot-hint{display:block;max-width:220px;margin:7px auto 0;color:#776a83;font-size:12px;line-height:1.55}.reading-result{display:none;max-width:870px;margin:42px auto 0;padding:28px;border:1px solid var(--line);border-radius:22px;background:rgba(255,255,255,.62)}.reading-result.show{display:block}.reading-result h2{font-size:34px}.reading-result p{color:#6d6375;line-height:1.75}.restart{display:block;margin:25px auto 0}.reading-link-button{border:0;cursor:pointer}
     @media(max-width:700px){.gate-panel{padding:10px 23px 45px}.gate-panel-inner{grid-template-columns:1fr}.gate-link{min-height:150px}.gate-actions{flex-direction:column;align-items:flex-start}.page-hero,.reading-stage{padding-left:23px;padding-right:23px}.reading-spread{gap:4px}.reading-slot{min-height:290px;padding:5px}.card-back,.reading-slot .card{max-width:100%;border-radius:11px}.card-back{border-width:4px;font-size:28px}.slot-title{font-size:15px}.slot-hint{font-size:10px}.reading-result{padding:20px}.reading-result h2{font-size:28px}}</style>
 </head><body>
-  <main class="shell">
-    <nav class="nav">
-      <a class="brand" href="./" aria-label="Paws Arcana home"><span class="paw">&#10022;</span><span>Paws Arcana</span></a>
-      <div class="nav-links"><a href="deck.html">Deck</a><a href="reading.html">Reading</a></div>
-      <a class="button" href="reading.html">Start a reading</a>
-    </nav>
-    <section class="hero">
-      <div>
-        <div class="eyebrow">Cat tarot &amp; fortune</div>
-        <h1>Cards for a quieter answer.</h1>
-        <p class="intro">카드를 천천히 둘러보고, 지금의 질문을 위해 세 장을 직접 뽑아보세요. 이곳은 두 개의 리딩으로 들어가는 시작점입니다.</p>
-        <div class="gate-actions"><a class="button" href="reading.html">Draw your cards</a><a class="button alt" href="deck.html">Explore the deck</a></div>
-        <p class="gate-note">각 카드는 실제 Paws Arcana 원화와 함께, 관계·일·조언까지 자세히 읽을 수 있습니다.</p>
-      </div>
-      <div class="hero-deck" aria-label="Paws Arcana tarot cards">
-        <figure class="card hero-card left"><img src="assets/cards/major_00_the_fool.jpg" alt="The Fool"></figure>
-        <figure class="card hero-card center"><img src="assets/cards/major_06_the_lovers.jpg" alt="The Lovers"></figure>
-        <figure class="card hero-card right"><img src="assets/cards/major_17_the_star.jpg" alt="The Star"></figure>
-      </div>
-    </section>
-    <section class="gate-panel" aria-label="Choose an experience"><div class="gate-panel-inner">
-      <a class="gate-link" href="deck.html"><div><div class="eyebrow">01 / Card archive</div><h2>Explore the deck</h2><p>78장의 원화를 살펴보고 원하는 카드를 눌러 자세한 해설을 읽습니다.</p></div><span>Open card archive &rarr;</span></a>
-      <a class="gate-link" href="reading.html"><div><div class="eyebrow">02 / Three-card reading</div><h2>Draw your cards</h2><p>과거, 현재, 미래의 자리에 한 장씩 직접 뽑아 한 번의 리딩으로 만납니다.</p></div><span>Begin a reading &rarr;</span></a>
-    </div></section>
+  <main class="reading-shell">
+    <nav class="nav"><a class="brand" href="./" aria-label="Paws Arcana home"><span class="paw">&#10022;</span><span>Paws Arcana</span></a><div class="nav-links"><a href="deck.html">Deck</a><a href="./">Home</a></div><a class="button" href="deck.html">Explore the deck</a></nav>
+    <section class="page-hero"><a class="back-link" href="./">&larr; Paws Arcana home</a><div class="eyebrow" style="margin-top:28px">Three-card reading</div><h1>Past, present, future.</h1><p>마음을 가다듬고 아래 세 장을 순서대로 눌러주세요. 이미 나온 카드는 다시 나오지 않습니다.</p></section>
+    <section class="reading-stage"><p id="readingPrompt">첫 번째 카드부터 직접 선택하세요.</p><div class="reading-spread" id="readingSpread" aria-live="polite"></div><div class="reading-result" id="readingResult"><div class="eyebrow">Your reading</div><h2>오늘의 세 장</h2><p id="readingSummary"></p><button class="button reading-link-button restart" id="restartReading" type="button">새로 뽑기</button></div></section>
   </main>
+  <script src="paws-arcana-site.js"></script><script src="reading.js"></script>
 </body>
 </html>

@@ -84,29 +84,31 @@
     @media(max-width:700px){.gate-panel{padding:10px 23px 45px}.gate-panel-inner{grid-template-columns:1fr}.gate-link{min-height:150px}.gate-actions{flex-direction:column;align-items:flex-start}.page-hero,.reading-stage{padding-left:23px;padding-right:23px}.reading-spread{gap:4px}.reading-slot{min-height:290px;padding:5px}.card-back,.reading-slot .card{max-width:100%;border-radius:11px}.card-back{border-width:4px;font-size:28px}.slot-title{font-size:15px}.slot-hint{font-size:10px}.reading-result{padding:20px}.reading-result h2{font-size:28px}}</style>
 </head><body>
   <main class="shell">
-    <nav class="nav">
-      <a class="brand" href="./" aria-label="Paws Arcana home"><span class="paw">&#10022;</span><span>Paws Arcana</span></a>
-      <div class="nav-links"><a href="deck.html">Deck</a><a href="reading.html">Reading</a></div>
-      <a class="button" href="reading.html">Start a reading</a>
-    </nav>
-    <section class="hero">
-      <div>
-        <div class="eyebrow">Cat tarot &amp; fortune</div>
-        <h1>Cards for a quieter answer.</h1>
-        <p class="intro">카드를 천천히 둘러보고, 지금의 질문을 위해 세 장을 직접 뽑아보세요. 이곳은 두 개의 리딩으로 들어가는 시작점입니다.</p>
-        <div class="gate-actions"><a class="button" href="reading.html">Draw your cards</a><a class="button alt" href="deck.html">Explore the deck</a></div>
-        <p class="gate-note">각 카드는 실제 Paws Arcana 원화와 함께, 관계·일·조언까지 자세히 읽을 수 있습니다.</p>
-      </div>
-      <div class="hero-deck" aria-label="Paws Arcana tarot cards">
-        <figure class="card hero-card left"><img src="assets/cards/major_00_the_fool.jpg" alt="The Fool"></figure>
-        <figure class="card hero-card center"><img src="assets/cards/major_06_the_lovers.jpg" alt="The Lovers"></figure>
-        <figure class="card hero-card right"><img src="assets/cards/major_17_the_star.jpg" alt="The Star"></figure>
+    <nav class="nav"><a class="brand" href="./" aria-label="Paws Arcana home"><span class="paw">&#10022;</span><span>Paws Arcana</span></a><div class="nav-links"><a href="./">Home</a><a href="reading.html">Reading</a></div><a class="button" href="reading.html">Start a reading</a></nav>
+    <section class="full-archive" id="all-cards">
+      <div class="full-archive-inner">
+        <header class="section-head archive-heading"><div><div class="eyebrow">All cards</div><h2>Explore every card</h2></div><p>78장의 원화를 수트별로 천천히 둘러보세요.</p></header>
+        <div class="filter-row" role="group" aria-label="카드 수트 필터">
+          <button class="filter active" type="button" data-filter="all">All 78</button><button class="filter" type="button" data-filter="major">Major</button><button class="filter" type="button" data-filter="cups">Cups</button><button class="filter" type="button" data-filter="pentacles">Pentacles</button><button class="filter" type="button" data-filter="swords">Swords</button><button class="filter" type="button" data-filter="wands">Wands</button>
+        </div>
+        <div class="card-gallery" id="cardGallery" aria-live="polite"></div>
       </div>
     </section>
-    <section class="gate-panel" aria-label="Choose an experience"><div class="gate-panel-inner">
-      <a class="gate-link" href="deck.html"><div><div class="eyebrow">01 / Card archive</div><h2>Explore the deck</h2><p>78장의 원화를 살펴보고 원하는 카드를 눌러 자세한 해설을 읽습니다.</p></div><span>Open card archive &rarr;</span></a>
-      <a class="gate-link" href="reading.html"><div><div class="eyebrow">02 / Three-card reading</div><h2>Draw your cards</h2><p>과거, 현재, 미래의 자리에 한 장씩 직접 뽑아 한 번의 리딩으로 만납니다.</p></div><span>Begin a reading &rarr;</span></a>
-    </div></section>
   </main>
+  <dialog class="card-dialog" id="cardDialog">
+    <button class="dialog-close" type="button" aria-label="닫기">&times;</button>
+    <img id="dialogImage" src="" alt="">
+    <div class="detail-body">
+      <span id="dialogSuit" class="eyebrow"></span><h2 id="dialogTitle"></h2>
+      <div class="detail-keywords" id="dialogKeywords"></div>
+      <section class="detail-block"><h3>핵심 의미</h3><p id="dialogMeaning"></p></section>
+      <div class="detail-grid">
+        <section class="detail-block"><h3>관계와 감정</h3><p id="dialogLove"></p></section>
+        <section class="detail-block"><h3>일과 현실</h3><p id="dialogWork"></p></section>
+      </div>
+      <section class="detail-block advice"><h3>이 카드의 조언</h3><p id="dialogAdvice"></p></section>
+    </div>
+  </dialog>
+  <script src="paws-arcana-site.js"></script>
 </body>
 </html>

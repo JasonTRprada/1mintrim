@@ -1,42 +1,36 @@
-const majorCards = [
-  ['00_the_fool', 'The Fool'], ['01_the_magician', 'The Magician'], ['02_the_high_priestess', 'The High Priestess'], ['03_the_empress', 'The Empress'], ['04_the_emperor', 'The Emperor'], ['05_the_hierophant', 'The Hierophant'], ['06_the_lovers', 'The Lovers'], ['07_the_chariot', 'The Chariot'], ['08_strength', 'Strength'], ['09_the_hermit', 'The Hermit'], ['10_wheel_of_fortune', 'Wheel of Fortune'], ['11_justice', 'Justice'], ['12_the_hanged_man', 'The Hanged Man'], ['13_death', 'Death'], ['14_temperance', 'Temperance'], ['15_the_devil', 'The Devil'], ['16_the_tower', 'The Tower'], ['17_the_star', 'The Star'], ['18_the_moon', 'The Moon'], ['19_the_sun', 'The Sun'], ['20_judgement', 'Judgement'], ['21_the_world', 'The World']
+const majorRows = [
+['00_the_fool','The Fool','시작 · 자유 · 가능성','새로운 길 앞에 서 있는 카드입니다. 완벽한 준비보다 호기심과 첫걸음이 중요하다는 뜻입니다. 결과를 다 알 수 없어도 경험을 신뢰해보세요.','관계에서는 계산보다 솔직한 관심이 흐름을 엽니다. 다만 상대의 신호를 가볍게 넘기지 말고, 자유와 책임의 균형을 지키세요.','새 프로젝트, 이직, 공부처럼 미지의 기회에 잘 어울립니다. 작은 실험을 시작하되 기본적인 확인은 해두는 편이 좋습니다.','모든 답을 얻은 뒤가 아니라, 지금 할 수 있는 가장 작은 행동부터 시작하세요.'],
+['01_the_magician','The Magician','의지 · 집중 · 실행','이미 가진 재능과 도구를 한곳에 모아 현실로 옮길 때입니다. 의도만으로 끝내지 말고, 말과 행동을 일치시키라는 카드입니다.','관계에서는 분명한 표현이 중요합니다. 원하는 바를 추측하게 두기보다 다정하고 직접적으로 전하세요.','기획, 설득, 협상, 창작에 힘이 실립니다. 자원을 흩어놓지 말고 하나의 목표에 집중하세요.','지금 손에 있는 도구를 목록으로 적고, 오늘 끝낼 한 가지를 정하세요.'],
+['02_the_high_priestess','The High Priestess','직관 · 비밀 · 내면','겉으로 드러난 정보보다 내면의 감각이 정확한 시기입니다. 서두른 결론 대신 관찰과 침묵이 더 많은 것을 알려줍니다.','감정의 빈자리를 상상으로 채우지 마세요. 거리감이 있다면 잠시 기다리고, 진짜 마음은 조용한 대화에서 확인하세요.','아직 공개되지 않은 정보가 있을 수 있습니다. 자료를 더 모으고 타이밍이 올 때까지 계획을 숙성시키세요.','불안해서 답을 재촉하지 말고, 몸이 보내는 미세한 신호를 기록해보세요.'],
+['03_the_empress','The Empress','풍요 · 돌봄 · 창조','돌보고 키우는 힘이 결실을 만드는 카드입니다. 충분함을 받아들이고, 아름다움과 감각을 삶에 들여놓으라는 메시지입니다.','관계에서는 애정 표현과 편안한 돌봄이 깊어집니다. 단, 모두를 돌보다 자신의 욕구를 잊지 마세요.','창작과 브랜딩, 생활 기반을 다지는 일에 좋습니다. 꾸준히 가꾼 일이 눈에 보이는 결과로 이어집니다.','더하기보다 잘 돌보는 데 집중하세요. 휴식과 식사, 공간을 먼저 정돈해보세요.'],
+['04_the_emperor','The Emperor','구조 · 책임 · 안정','경계와 원칙이 필요한 시기입니다. 흔들리는 감정보다 기준을 세우면 안정이 생깁니다.','관계에서는 책임감 있는 약속이 신뢰를 만듭니다. 통제하려 들기보다 서로의 역할과 경계를 분명히 하세요.','리더십, 계약, 예산, 장기 계획에 유리합니다. 감으로 결정한 부분은 규칙과 수치로 다시 점검하세요.','당장 필요한 기준 하나와 지켜야 할 마감 하나를 정하세요.'],
+['05_the_hierophant','The Hierophant','배움 · 전통 · 가치','검증된 지식과 믿을 만한 조언이 도움이 되는 카드입니다. 혼자 모든 것을 새로 만들기보다 좋은 체계를 배우세요.','관계에서는 서로 중요하게 여기는 가치와 약속을 나누는 일이 필요합니다.','멘토, 교육, 자격, 조직의 규칙이 기회를 엽니다. 기본기를 무시하지 마세요.','나에게 맞는 스승이나 참고할 기준을 하나 선택해 깊게 따라가세요.'],
+['06_the_lovers','The Lovers','선택 · 조화 · 진심','사랑만이 아니라 가치에 맞는 선택을 뜻합니다. 마음과 행동이 같은 방향을 향할 때 관계와 일이 선명해집니다.','관계에서는 솔직한 선택과 상호 존중이 핵심입니다. 애매함을 오래 끌기보다 진심을 확인하세요.','협업과 파트너십에 좋습니다. 조건보다 함께 일하는 방식이 맞는지 살펴보세요.','무엇을 얻을지보다, 이 선택이 어떤 사람이 되게 하는지 물어보세요.'],
+['07_the_chariot','The Chariot','추진력 · 방향 · 승리','서로 다른 욕구를 통제해 한 방향으로 이끄는 카드입니다. 흔들려도 목표를 잃지 않으면 전진할 수 있습니다.','관계에서는 감정의 속도를 맞추는 일이 중요합니다. 이기려 하기보다 함께 갈 방향을 정하세요.','경쟁, 이동, 출시, 목표 달성에 힘이 있습니다. 단기 성과에 흔들리지 말고 우선순위를 지키세요.','에너지를 분산시키는 일을 줄이고, 이번 주의 최우선 목표 하나에 집중하세요.'],
+['08_strength','Strength','용기 · 인내 · 다정한 힘','강한 힘은 억누름이 아니라 부드러운 조절에서 나온다는 카드입니다. 두려움과 충동을 적으로 보지 말고 다뤄보세요.','관계에서는 방어보다 따뜻한 확신이 효과적입니다. 힘든 감정을 인정하되 상처 주는 방식으로 표현하지 마세요.','꾸준함이 실력을 이깁니다. 부담이 큰 일도 한 번에 끝내려 하지 말고 지속 가능한 속도로 가세요.','나를 몰아붙이는 말 대신, 계속할 수 있게 만드는 말을 선택하세요.'],
+['09_the_hermit','The Hermit','성찰 · 고독 · 탐색','잠시 물러나 자기만의 답을 찾는 시기입니다. 외부의 소음보다 자신이 이미 배운 것을 신뢰하세요.','관계에서는 거리가 필요할 수 있습니다. 단절이 아니라 마음을 정리할 시간을 정중히 요청하세요.','혼자 깊게 파고드는 연구와 정리에 좋습니다. 공개보다 내실을 먼저 다지세요.','불필요한 약속 하나를 비우고, 조용히 생각할 시간을 확보하세요.'],
+['10_wheel_of_fortune','Wheel of Fortune','전환 · 흐름 · 기회','예상 밖의 변화와 순환을 뜻합니다. 통제할 수 없는 흐름을 인정할수록 기회를 더 잘 잡을 수 있습니다.','관계에서는 고정된 패턴이 바뀔 수 있습니다. 변화를 위협으로만 보지 말고 새로운 대화를 시도하세요.','환경과 타이밍이 바뀝니다. 준비한 사람에게는 전환점이 되므로 기회를 빠르게 검토하세요.','붙잡을 것과 흘려보낼 것을 구분하세요.'],
+['11_justice','Justice','균형 · 진실 · 책임','행동의 결과를 정직하게 바라보라는 카드입니다. 감정적 판단보다 사실과 약속을 기준으로 선택하세요.','관계에서는 공정함과 상호 책임이 중요합니다. 서운함도 구체적인 사실과 요청으로 말하세요.','계약, 정산, 평가, 문서에 유리합니다. 작은 조건도 명확하게 확인하세요.','지금의 선택이 나중에도 설명 가능한지 스스로에게 물어보세요.'],
+['12_the_hanged_man','The Hanged Man','멈춤 · 관점 · 내려놓음','억지로 밀기보다 관점을 바꾸며 기다려야 하는 때입니다. 잠깐의 멈춤이 더 큰 손실을 막을 수 있습니다.','관계에서는 내 방식만 고집하지 말고 상대의 자리에서 바라보세요.','일이 지연되면 계획을 포기하기보다 기준과 순서를 재검토하세요.','당장 해결하려는 집착 하나를 내려놓고, 다른 시선에서 메모해보세요.'],
+['13_death','Death','종결 · 전환 · 재생','끝이 있어야 새 흐름이 시작됩니다. 낡은 방식과 정체성을 정리하는 변화의 카드이며, 문자 그대로의 죽음을 뜻하지 않습니다.','관계에서는 끝낸 감정과 새로운 경계를 정리할 필요가 있습니다.','더 이상 효과 없는 업무 방식이나 프로젝트를 과감히 정리하면 새 자리가 생깁니다.','붙잡는 이유를 적어보고, 정말 필요한 것만 남기세요.'],
+['14_temperance','Temperance','조율 · 회복 · 균형','서로 다른 요소를 천천히 섞어 알맞은 흐름을 만드는 카드입니다. 극단보다 지속 가능한 리듬이 답입니다.','관계에서는 속도와 거리의 균형을 맞추면 오해가 풀립니다.','협업, 편집, 회복 단계에 좋습니다. 급한 결정보다 작은 조정을 반복하세요.','생활 리듬 하나를 무리 없이 조정해보세요.'],
+['15_the_devil','The Devil','집착 · 욕망 · 해방','두려움이나 욕망에 묶인 패턴을 비추는 카드입니다. 문제를 알아차리는 순간 선택권도 되찾을 수 있습니다.','관계에서는 의존, 질투, 반복되는 힘겨루기를 정직하게 보세요.','일과 돈에서는 단기 보상이나 과로의 대가를 점검하세요.','나를 묶는 규칙이 실제 사실인지, 익숙한 두려움인지 구분하세요.'],
+['16_the_tower','The Tower','붕괴 · 진실 · 재구성','버티던 가정이 무너질 수 있지만, 그것은 더 정직한 기반을 만들 기회입니다. 갑작스러운 변화에 유연하게 대응하세요.','관계에서는 감춰 둔 사실이 드러나며 구조가 바뀔 수 있습니다.','계획의 취약점이 보이면 미루지 말고 안전장치와 대안을 세우세요.','잃는 것보다 남는 진실에 집중하고, 지금 가능한 복구부터 하세요.'],
+['17_the_star','The Star','희망 · 치유 · 영감','긴 밤 뒤에 다시 방향을 보게 하는 카드입니다. 회복은 조용하지만 분명하게 시작됩니다.','관계에서는 기대를 강요하지 않는 다정함이 신뢰를 되살립니다.','창작, 공개, 장기 비전에 좋습니다. 작더라도 꾸준히 나를 드러내세요.','완벽한 결과보다 계속 바라볼 별 하나를 정하세요.'],
+['18_the_moon','The Moon','무의식 · 불안 · 상상','불확실함이 커지는 시기입니다. 감정은 진짜지만, 그 해석이 모두 사실은 아닐 수 있습니다.','관계에서는 추측보다 확인이 필요합니다. 밤의 불안을 다음 날의 사실로 검증하세요.','일에서는 정보가 불완전할 수 있습니다. 큰 결정은 한 번 더 확인하고 기록을 남기세요.','두려운 생각과 실제 증거를 따로 적어보세요.'],
+['19_the_sun','The Sun','기쁨 · 명료함 · 활력','명료함과 생기가 돌아오는 카드입니다. 자신을 숨기지 않고 즐거움을 나눌수록 좋은 결과가 커집니다.','관계에서는 솔직한 애정 표현과 함께하는 시간이 힘이 됩니다.','성과, 공개, 축하, 자신감이 필요한 일에 좋습니다.','잘한 일을 작게라도 축하하고, 빛나는 부분을 감추지 마세요.'],
+['20_judgement','Judgement','각성 · 부름 · 결단','과거의 경험을 정리해 다음 단계로 응답하는 카드입니다. 미뤄둔 결정을 다시 부르는 신호일 수 있습니다.','관계에서는 오래된 오해를 정리하고 새 약속을 만들 수 있습니다.','재도전, 포트폴리오 정리, 중요한 발표와 잘 맞습니다.','과거를 벌주기보다 배운 것을 들고 다음 선택을 하세요.'],
+['21_the_world','The World','완성 · 통합 · 확장','한 주기가 잘 마무리되고, 배운 것을 더 넓은 세계로 가져갈 때입니다.','관계에서는 서로의 성장을 축하하며 안정된 연결을 만들 수 있습니다.','완료, 출시, 확장, 해외·외부 연결에 좋습니다.','끝낸 일을 인정하고, 다음 장을 위한 여백을 만드세요.']
 ];
-const ranks = [['01_ace', 'Ace'], ['02_two', 'Two'], ['03_three', 'Three'], ['04_four', 'Four'], ['05_five', 'Five'], ['06_six', 'Six'], ['07_seven', 'Seven'], ['08_eight', 'Eight'], ['09_nine', 'Nine'], ['10_ten', 'Ten'], ['page', 'Page'], ['knight', 'Knight'], ['queen', 'Queen'], ['king', 'King']];
-const suits = [['cups', 'Cups'], ['pentacles', 'Pentacles'], ['swords', 'Swords'], ['wands', 'Wands']];
-const allCards = [
-  ...majorCards.map(([id, title]) => ({ id: `major_${id}`, title, suit: 'major', suitLabel: 'Major Arcana', src: `assets/cards/major_${id}.jpg` })),
-  ...suits.flatMap(([suit, suitLabel]) => ranks.map(([id, rank]) => ({ id: `${suit}_${id}`, title: `${rank} of ${suitLabel}`, suit, suitLabel, src: `assets/cards/${suit}_${id}.jpg` })))
-];
-const gallery = document.querySelector('#cardGallery');
-const dialog = document.querySelector('#cardDialog');
-const dialogImage = document.querySelector('#dialogImage');
-const dialogTitle = document.querySelector('#dialogTitle');
-const dialogSuit = document.querySelector('#dialogSuit');
-const dialogDescription = document.querySelector('#dialogDescription');
-const description = card => `${card.title} — Paws Arcana의 ${card.suitLabel} 카드입니다. 카드 원화를 크게 보고, 리딩의 출발점으로 사용해보세요.`;
-function renderGallery(filter = 'all') {
-  const visible = filter === 'all' ? allCards : allCards.filter(card => card.suit === filter);
-  gallery.innerHTML = visible.map(card => `<button class="gallery-card" type="button" data-card-id="${card.id}"><span class="card"><img loading="lazy" src="${card.src}" alt="${card.title}"></span><h3>${card.title}</h3><p>${card.suitLabel}</p></button>`).join('');
-}
-function openCard(id) {
-  const card = allCards.find(item => item.id === id);
-  if (!card) return;
-  dialogImage.src = card.src;
-  dialogImage.alt = card.title;
-  dialogSuit.textContent = card.suitLabel;
-  dialogTitle.textContent = card.title;
-  dialogDescription.textContent = description(card);
-  if (typeof dialog.showModal === 'function') dialog.showModal();
-}
-document.querySelectorAll('.filter').forEach(button => button.addEventListener('click', () => {
-  document.querySelectorAll('.filter').forEach(item => item.classList.toggle('active', item === button));
-  renderGallery(button.dataset.filter);
-}));
-gallery.addEventListener('click', event => {
-  const target = event.target.closest('[data-card-id]');
-  if (target) openCard(target.dataset.cardId);
-});
-document.querySelectorAll('[data-open-card]').forEach(button => button.addEventListener('click', () => openCard(button.dataset.openCard)));
-document.querySelector('.dialog-close').addEventListener('click', () => dialog.close());
-dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
-renderGallery();
+const ranks = [['01_ace','Ace','씨앗 · 출발','새로운 가능성이 열립니다.'],['02_two','Two','균형 · 선택','두 방향 사이에서 균형을 잡는 때입니다.'],['03_three','Three','협력 · 확장','나눔과 협력이 결과를 키웁니다.'],['04_four','Four','안정 · 경계','안정이 필요하지만 지나친 고정은 피하세요.'],['05_five','Five','갈등 · 변화','불편한 변화가 새로운 기준을 요구합니다.'],['06_six','Six','조화 · 회복','주고받음과 회복의 흐름이 생깁니다.'],['07_seven','Seven','점검 · 인내','성과를 기다리며 방향을 점검할 때입니다.'],['08_eight','Eight','숙련 · 몰입','반복과 집중이 실력을 만듭니다.'],['09_nine','Nine','성취 · 자립','쌓아온 결과를 누리고 스스로를 신뢰하세요.'],['10_ten','Ten','완성 · 부담','결실과 함께 책임의 무게도 돌아봅니다.'],['page','Page','호기심 · 소식','새로운 배움과 가벼운 신호에 열려 있으세요.'],['knight','Knight','추진 · 이동','방향을 정하면 행동으로 옮기는 때입니다.'],['queen','Queen','성숙 · 돌봄','내면의 자원을 안정적으로 활용하세요.'],['king','King','주도 · 책임','경험과 판단으로 흐름을 이끄세요.']];
+const suits = {
+ cups:{label:'Cups',keywords:'감정 · 관계 · 공감',meaning:'컵은 마음, 친밀감, 상상력, 관계의 흐름을 다룹니다.',love:'감정의 교류를 피하지 말고, 원하는 친밀감의 형태를 솔직히 말해보세요.',work:'협업의 분위기와 사람 사이의 신뢰가 성과에 영향을 줍니다.'},
+ pentacles:{label:'Pentacles',keywords:'현실 · 자원 · 안정',meaning:'펜타클은 돈, 몸, 시간, 기술처럼 눈에 보이는 기반을 다룹니다.',love:'안정감은 말보다 꾸준한 행동과 생활의 리듬에서 만들어집니다.',work:'예산, 기술, 일정, 장기적인 가치처럼 현실적인 기준을 점검하세요.'},
+ swords:{label:'Swords',keywords:'생각 · 판단 · 경계',meaning:'소드는 생각, 언어, 갈등, 결단과 진실을 다룹니다.',love:'추측을 키우기보다 사실과 감정을 구분해 대화하세요.',work:'분석과 결정에는 강하지만, 지나친 긴장과 과로는 피해야 합니다.'},
+ wands:{label:'Wands',keywords:'열정 · 행동 · 창조',meaning:'완드는 의지, 창조성, 용기, 성장의 추진력을 다룹니다.',love:'함께 해보고 싶은 일을 만들면 관계에 활력이 생깁니다.',work:'시작과 발표, 도전에는 좋지만 에너지를 분산하지 않도록 우선순위를 세우세요.'}
+};
+const allCards=[...majorRows.map(([id,title,keywords,meaning,love,work,advice])=>({id:`major_${id}`,title,suit:'major',suitLabel:'Major Arcana',src:`assets/cards/major_${id}.jpg`,keywords,meaning,love,work,advice})),...Object.entries(suits).flatMap(([suit,profile])=>ranks.map(([id,rank,rankKeywords,rankMeaning])=>({id:`${suit}_${id}`,title:`${rank} of ${profile.label}`,suit,suitLabel:profile.label,src:`assets/cards/${suit}_${id}.jpg`,keywords:`${rankKeywords} · ${profile.keywords}`,meaning:`${rankMeaning} ${profile.meaning}`,love:profile.love,work:profile.work,advice:`${rankMeaning} 지금은 ${profile.label}의 주제를 현실의 작은 행동으로 옮겨보세요.`})) )];
+const gallery=document.querySelector('#cardGallery'),dialog=document.querySelector('#cardDialog');
+function renderGallery(filter='all'){const visible=filter==='all'?allCards:allCards.filter(c=>c.suit===filter);gallery.innerHTML=visible.map(c=>`<button class="gallery-card" type="button" data-card-id="${c.id}"><span class="card"><img loading="lazy" src="${c.src}" alt="${c.title}"></span><h3>${c.title}</h3><p>${c.suitLabel}</p></button>`).join('')}
+function openCard(id){const c=allCards.find(x=>x.id===id);if(!c)return;document.querySelector('#dialogImage').src=c.src;document.querySelector('#dialogImage').alt=c.title;document.querySelector('#dialogSuit').textContent=c.suitLabel;document.querySelector('#dialogTitle').textContent=c.title;document.querySelector('#dialogKeywords').innerHTML=c.keywords.split(' · ').map(k=>`<span>${k}</span>`).join('');document.querySelector('#dialogMeaning').textContent=c.meaning;document.querySelector('#dialogLove').textContent=c.love;document.querySelector('#dialogWork').textContent=c.work;document.querySelector('#dialogAdvice').textContent=c.advice;dialog.showModal()}
+document.querySelectorAll('.filter').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.filter').forEach(x=>x.classList.toggle('active',x===b));renderGallery(b.dataset.filter)}));gallery.addEventListener('click',e=>{const b=e.target.closest('[data-card-id]');if(b)openCard(b.dataset.cardId)});document.querySelectorAll('[data-open-card]').forEach(b=>b.addEventListener('click',()=>openCard(b.dataset.openCard)));document.querySelector('.dialog-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});renderGallery();

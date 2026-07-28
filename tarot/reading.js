@@ -1,5 +1,6 @@
 (() => {
   const API_URL='https://paws.1mintrim.com/api/reading';
+  const SHARE_API='https://paws.1mintrim.com/api/shares';
   const deck=window.PawsArcanaDeck || [];
   const form=document.querySelector('#questionForm');
   const questionInput=document.querySelector('#readingQuestion');
@@ -10,11 +11,17 @@
   const echo=document.querySelector('#questionEcho');
   const summary=document.querySelector('#readingSummary');
   const restart=document.querySelector('#restartReading');
+  const shareActions=document.querySelector('#shareActions');
+  const copyShare=document.querySelector('#copyShare');
+  const nativeShare=document.querySelector('#nativeShare');
+  const shareStatus=document.querySelector('#shareStatus');
   const positions=['Past','Present','Future'];
   const positionKo=['과거','현재','미래'];
   let picked=[];
   let activeQuestion='';
   let requestVersion=0;
+  let latestSharePayload=null;
+  let latestShareUrl='';
   const escapeHtml=value=>String(value).replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
   const formatText=value=>escapeHtml(value).replace(/\n/g,'<br>');
   const apiCardId=id=>{
@@ -34,6 +41,21 @@
   function showInterpretation(sections){
     const order=['총평','과거','현재','미래','조언'];
     summary.innerHTML=order.filter(key=>sections&&sections[key]).map(key=>`<section class="detail-block"><h3>${key}</h3><p>${formatText(sections[key])}</p></section>`).join('');
+    latestSharePayload={question:activeQuestion,cards:picked.map((card,index)=>({position:positionKo[index],title:card.title,src:card.src})),sections};
+    latestShareUrl='';shareStatus.textContent='';shareActions.hidden=false;
+  }
+  async function createShare(){
+    if(!latestSharePayload)throw new Error('공유할 리딩이 아직 준비되지 않았어요.');
+    if(latestShareUrl)return latestShareUrl;
+    shareStatus.textContent='공유 카드를 저장하고 있어요…';
+    const response=await fetch(SHARE_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(latestSharePayload)});
+    const data=await response.json();
+    if(!response.ok||!data.ok)throw new Error(data.error||'공유 링크를 만들지 못했어요.');
+    latestShareUrl=data.url;return latestShareUrl;
+  }
+  async function copyText(value){
+    if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);return;}
+    const area=document.createElement('textarea');area.value=value;document.body.appendChild(area);area.select();document.execCommand('copy');area.remove();
   }
   async function requestInterpretation(){
     const version=++requestVersion;
@@ -58,5 +80,6 @@
   form.addEventListener('submit',event=>{event.preventDefault();const question=questionInput.value.trim();if(!question){questionError.classList.add('show');questionInput.focus();return;}activeQuestion=question;questionError.classList.remove('show');picked=[];requestVersion++;spread.hidden=false;render();spread.scrollIntoView({behavior:'smooth',block:'center'});});
   questionInput.addEventListener('input',()=>questionError.classList.remove('show'));
   spread.addEventListener('click',event=>{const button=event.target.closest('[data-slot]');if(!button||picked.length>=3)return;const slot=Number(button.dataset.slot);if(slot!==picked.length)return;const card=randomCard();if(!card)return;picked.push(card);render();});
-  restart.addEventListener('click',()=>{requestVersion++;picked=[];activeQuestion='';questionInput.value='';spread.hidden=true;result.classList.remove('show');prompt.textContent='질문을 적고 시작해 주세요.';questionInput.focus();window.scrollTo({top:0,behavior:'smooth'});});
+  copyShare.addEventListener('click',async()=>{try{const url=await createShare();await copyText(url);shareStatus.textContent='공유 링크를 복사했어요.';}catch(error){shareStatus.textContent=error.message||'공유 링크를 만들지 못했어요.';}});
+  nativeShare.addEventListener('click',async()=>{try{const url=await createShare();if(navigator.share){await navigator.share({title:'Paws Arcana · Tarot Reading',text:'Paws Arcana 리딩 결과',url});shareStatus.textContent='공유를 준비했어요.';}else{await copyText(url);shareStatus.textContent='공유 링크를 복사했어요.';}}catch(error){if(error&&error.name==='AbortError')return;shareStatus.textContent=error.message||'공유를 준비하지 못했어요.';}});  restart.addEventListener('click',()=>{requestVersion++;picked=[];activeQuestion='';latestSharePayload=null;latestShareUrl='';questionInput.value='';spread.hidden=true;result.classList.remove('show');shareActions.hidden=true;prompt.textContent='질문을 적고 시작해 주세요.';questionInput.focus();window.scrollTo({top:0,behavior:'smooth'});});
 })();

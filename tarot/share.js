@@ -1,0 +1,8 @@
+(() => {
+  const app=document.querySelector('#app');
+  const id=new URLSearchParams(location.search).get('id');
+  const esc=value=>String(value||'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+  const render=share=>{const order=['총평','과거','현재','미래','조언'];app.innerHTML=`<header class="head"><div class="eyebrow">Shared three-card reading</div><h1>Cards for this moment.</h1><p>Paws Arcana가 남긴 세 장의 흐름</p></header><section class="question"><strong>질문</strong><br>“${esc(share.question)}”</section><section class="cards">${share.cards.map(card=>`<article class="card-item"><div class="pos">${esc(card.position)}</div><img src="/tarot/${esc(card.src)}" alt="${esc(card.title)}"><h2>${esc(card.title)}</h2></article>`).join('')}</section><section class="reading"><div class="eyebrow">Your reading</div><h2>질문을 향한 세 장</h2>${order.filter(key=>share.sections&&share.sections[key]).map(key=>`<section class="block"><h3>${key}</h3><p>${esc(share.sections[key])}</p></section>`).join('')}</section>`;};
+  if(!id){app.innerHTML='<div class="error">공유 링크가 올바르지 않습니다.</div>';return;}
+  fetch(`https://paws.1mintrim.com/api/shares/${encodeURIComponent(id)}`).then(async response=>{const data=await response.json();if(!response.ok||!data.ok)throw new Error(data.error||'리딩을 찾지 못했습니다.');return data.share;}).then(render).catch(error=>{app.innerHTML=`<div class="error">${esc(error.message||'공유 리딩을 불러오지 못했습니다.')}</div>`;});
+})();

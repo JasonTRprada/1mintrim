@@ -7,13 +7,19 @@ export const GROUPS = [
     { id: "resize", ic: "⬚", name: "키프레임 리사이즈", desc: "1920×1088 · 1376×768 · 1MP 같은 프리셋으로 여러 장을 한 번에. 크롭/패드/늘리기.", tags: "일괄 · ZIP" },
     { id: "sheet", ic: "▦", name: "컨택트 시트", desc: "여러 장을 격자 한 장으로. 파일명 라벨, 셀 크기, 배경색.", tags: "캐릭터 시트 · 비교표" },
     { id: "frames", ic: "🎞", name: "영상 → 스틸", desc: "원하는 시각·균등 N장·마지막 프레임을 PNG 로. i2v 키프레임 뽑기.", tags: "PNG · ZIP" },
-    { id: "sharp", ic: "◎", name: "선명도 QC", desc: "1280 기준 라플라시안 분산(lap)·halo·micro 를 여러 장 한 번에 표로. 얼굴 ROI 는 드래그.", tags: "face_qc_score 동일식" },
+    { id: "sharp", ic: "◎", name: "선명도 QC", desc: "1280 기준 라플라시안 분산(lap)·halo·micro 를 여러 장 한 번에 표로. 얼굴은 자동 검출.", tags: "face_qc_score 동일식 · 얼굴 검출" },
+    { id: "compare", ic: "◫", name: "비교 뷰어", desc: "A/B 와이프 · 2~4장 동기 줌 격자 · 차이 맵 · 영상 2편 동기 재생. v20 vs v70 판정용.", tags: "와이프 · 차이맵" },
+    { id: "pnginfo", ic: "ⓘ", name: "이미지 정보", desc: "ComfyUI PNG 의 prompt·workflow JSON 추출, EXIF 요약, 메타 없는 사본 저장.", tags: "ComfyUI · EXIF" },
+    { id: "palette", ic: "🎨", name: "팔레트 추출", desc: "대표색 N개를 k-means 로. HEX 복사, 프롬프트용 색 이름, 팔레트 PNG.", tags: "k-means" },
   ]},
-  { id: "image", title: "이미지", sub: "편집 · 분할 · 가리기 · 누끼", tools: [
-    { id: "edit", ic: "✂", name: "이미지 편집", desc: "크롭·회전·뒤집기·크기·워터마크·포맷/품질을 한 화면에서.", tags: "PNG · JPG · WEBP" },
+  { id: "image", title: "이미지", sub: "편집 · 분할 · 가리기 · 누끼 · 지우기 · 서명", tools: [
+    { id: "edit", ic: "✂", name: "이미지 편집", desc: "크롭·회전·뒤집기·크기·색 보정·언샤프·워터마크·포맷/품질을 한 화면에서.", tags: "PNG · JPG · WEBP" },
+    { id: "canvas", ic: "🖼", name: "템플릿 캔버스", desc: "여러 장·문구·띠를 배치한 페이지들 → 이미지 또는 페이드 슬라이드 GIF/WebM.", tags: "레이어 · 페이지 · 슬라이드" },
     { id: "split", ic: "⊞", name: "사진 분할", desc: "2·4·8·16 조각 또는 임의 행×열로 잘라 ZIP.", tags: "격자" },
-    { id: "mosaic", ic: "▩", name: "모자이크", desc: "브러시로 픽셀화·블러·검정 가리기. 되돌리기 지원.", tags: "브러시 · 사각" },
+    { id: "mosaic", ic: "▩", name: "모자이크", desc: "얼굴 자동 감지 또는 브러시로 픽셀화·블러·검정 가리기.", tags: "얼굴 검출 ONNX 1.2MB" },
+    { id: "cleanup", ic: "🧽", name: "작은 표시 지우기", desc: "워터마크·잡티·전선을 마스크로 잡아 주변 결로 메운다. 가장자리 워터마크 자동 감지.", tags: "인페인트 · 결 복제" },
     { id: "bg", ic: "🪄", name: "배경 제거", desc: "U²-Net(경량) ONNX 를 브라우저에서 돌려 누끼. 투명·단색·그라데이션 배경.", tags: "ONNX 4.6MB · 첫 실행만 로드" },
+    { id: "sign", ic: "✍", name: "사진·문서 서명", desc: "손글씨 패드·타이핑·서명 사진을 사진이나 PDF 페이지 위에 놓고 저장.", tags: "PDF 유지" },
   ]},
   { id: "video", title: "영상 · GIF", sub: "브라우저 디코더로", tools: [
     { id: "gif", ic: "🔁", name: "영상 → GIF", desc: "구간·fps·너비·부메랑. ffmpeg 없이 gifenc 로 인코딩.", tags: "오프라인" },
@@ -21,8 +27,9 @@ export const GROUPS = [
   ]},
   { id: "file", title: "파일 · 기타", sub: "", tools: [
     { id: "rename", ic: "🏷", name: "파일명 일괄 변경", desc: "패턴·번호·접두/접미로 이름을 바꿔 ZIP 으로.", tags: "{name} {n}" },
-    { id: "pdf", ic: "📄", name: "이미지 → PDF", desc: "여러 장을 한 PDF 로. 순서 조정, 페이지 맞춤.", tags: "pdf-lib" },
+    { id: "pdf", ic: "📄", name: "이미지 ↔ PDF", desc: "여러 장을 한 PDF 로, PDF 페이지를 이미지로. 순서 조정, 페이지 맞춤.", tags: "pdf-lib · pdf.js" },
     { id: "qr", ic: "▣", name: "QR 코드", desc: "주소·텍스트를 QR 로. 색·여백·크기. PNG/SVG.", tags: "" },
+    { id: "roulette", ic: "🎡", name: "뽑기 룰렛", desc: "후보 이미지·문구를 돌려 하나 고른다. 못 고르겠을 때, 또는 벌칙 뽑기.", tags: "재미 · 폭죽" },
   ]},
   { id: "legacy", title: "기존 도구 (ffmpeg.wasm · 온라인 필요)", sub: "코어 31MB 를 CDN 에서 받는다", tools: [
     { id: "ext:../legacy/1mintrim-v1/", ic: "✂", name: "영상 트림 (1MinTrim)", desc: "구간 잘라 이어붙이기 · 최대 5분.", tags: "ffmpeg", ext: true },

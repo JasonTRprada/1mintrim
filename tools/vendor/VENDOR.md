@@ -7,5 +7,7 @@
 | gifenc.esm.js | gifenc 1.0.3 (npm) dist/gifenc.js 에 ESM 래퍼 붙임 | MIT |
 | qrcode.js | qrcode-generator 1.4.4 (npm) | MIT |
 | pdf-lib.min.js | pdf-lib 1.17.1 (npm) | MIT |
+| face-rfb-320.onnx | Linzaer/Ultra-Light-Fast-Generic-Face-Detector-1MB (version-RFB-320) | MIT |
+| pdf.min.mjs · pdf.worker.min.mjs | pdfjs-dist 4.10.38 (npm) | Apache-2.0 |
 
 전부 정적 파일. 서버·CDN 호출 없음. 사진·영상은 브라우저 밖으로 나가지 않는다.

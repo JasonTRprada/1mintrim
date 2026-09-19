@@ -1,7 +1,7 @@
 // 오프라인 캐시 — 핵심 파일은 설치 때, 벤더(모델·wasm)는 첫 사용 때 캐시
-const VERSION = "wt-v1";
-const CORE = ["./", "index.html", "app.js", "ui.js", "style.css", "manifest.webmanifest", "bg-worker.js",
-  ...["gallery", "resize", "sheet", "frames", "sharp", "edit", "split", "mosaic", "bg", "gif", "record", "rename", "pdf", "qr"].map((t) => `tools/${t}.js`),
+const VERSION = "wt-v2";
+const CORE = ["./", "index.html", "app.js", "ui.js", "style.css", "manifest.webmanifest", "bg-worker.js", "face-worker.js", "facedet.js",
+  ...["gallery", "resize", "sheet", "frames", "sharp", "compare", "pnginfo", "palette", "edit", "canvas", "split", "mosaic", "cleanup", "bg", "sign", "gif", "record", "rename", "pdf", "qr", "roulette"].map((t) => `tools/${t}.js`),
   "vendor/gifenc.esm.js", "vendor/qrcode.js"];
 self.addEventListener("install", (e) => {
   e.waitUntil((async () => { const c = await caches.open(VERSION); await c.addAll(CORE); self.skipWaiting(); })());

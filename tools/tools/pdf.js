@@ -8,7 +8,16 @@ export function mount(root) {
   let files = [];
   const st = { page: "image", margin: 0, quality: 0.9, maxSide: 0, title: "" };
   const list = h("ul", { class: "filelist" }); const prog = progress();
-  const dz = dropzone({ accept: "image/*", hint: "여러 장 → 한 PDF. 순서는 목록에서 ▲▼", onFiles: (fs) => { files = files.concat(fs.filter(isImage)); render(); } });
+  const dz = dropzone({ accept: "image/*,application/pdf", hint: "이미지 여러 장 → 한 PDF · PDF 를 넣으면 페이지를 이미지로 뽑는다", onFiles: (fs) => { const pdfs = fs.filter((f) => f.type === "application/pdf" || /\.pdf$/i.test(f.name)); if (pdfs.length) return pdfToImages(pdfs[0]); files = files.concat(fs.filter(isImage)); render(); } });
+  const st2 = { scale: 2, fmt: "png" };
+  async function pdfToImages(f) {
+    try {
+      prog.set(0.05, "pdf.js 로드"); const lib = await import(new URL("../vendor/pdf.min.mjs", import.meta.url).href); lib.GlobalWorkerOptions.workerSrc = new URL("../vendor/pdf.worker.min.mjs", import.meta.url).href;
+      const pdf = await lib.getDocument({ data: new Uint8Array(await f.arrayBuffer()) }).promise; const out = [];
+      for (let i = 1; i <= pdf.numPages; i++) { prog.set(i / pdf.numPages, `페이지 ${i}/${pdf.numPages}`); const p = await pdf.getPage(i); const vp = p.getViewport({ scale: st2.scale }); const c = canvas(vp.width, vp.height); const ctx = c.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, c.width, c.height); await p.render({ canvasContext: ctx, viewport: vp }).promise; out.push({ blob: await toBlob(c, st2.fmt === "jpg" ? "image/jpeg" : "image/png", 0.92), name: `${f.name.replace(/\.pdf$/i, "")}_p${String(i).padStart(3, "0")}.${st2.fmt}` }); }
+      prog.done(); const { deliver } = await import("../ui.js"); await deliver(out, `${f.name.replace(/\.pdf$/i, "")}_pages.zip`); toast(`${out.length}페이지 → 이미지`, "ok");
+    } catch (e) { prog.done(); toast("PDF 읽기 실패: " + e.message, "warn"); }
+  }
   function render() {
     list.replaceChildren(...files.map((f, i) => h("li", {}, h("img", { class: "thumb", src: URL.createObjectURL(f), onload: (e) => URL.revokeObjectURL(e.target.src) }), h("span", { class: "fname" }, f.name), h("span", { class: "fsize" }, fmtBytes(f.size)),
       h("button", { class: "x", type: "button", onclick: () => { if (i > 0) { [files[i - 1], files[i]] = [files[i], files[i - 1]]; render(); } } }, "▲"), h("button", { class: "x", type: "button", onclick: () => { if (i < files.length - 1) { [files[i + 1], files[i]] = [files[i], files[i + 1]]; render(); } } }, "▼"), h("button", { class: "x", type: "button", onclick: () => { files.splice(i, 1); render(); } }, "×"))));
@@ -44,6 +53,8 @@ export function mount(root) {
       field("긴 변 제한 px (0=원본)", num(0, { min: 0, max: 8000, step: 100, onInput: (v) => st.maxSide = v }), "PNG 은 제한 없을 때 무손실로 그대로 들어간다"),
       field("JPG 품질", num(90, { min: 40, max: 100, onInput: (v) => st.quality = v / 100 })),
       button("이름순 정렬", () => { files.sort((a, b) => a.name.localeCompare(b.name, "ko", { numeric: true })); render(); }),
-      runBtn, prog)));
+      runBtn, prog,
+      h("h3", {}, "PDF → 이미지 (PDF 를 드롭)"),
+      h("div", { class: "row" }, field("배율", select([["1", "1× (72dpi)"], ["2", "2× (144dpi)"], ["3", "3× (216dpi)"]], "2", (v) => st2.scale = Number(v))), field("형식", select([["png", "PNG"], ["jpg", "JPG"]], "png", (v) => st2.fmt = v))))));
   return () => dz.destroy();
 }

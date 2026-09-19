@@ -3,7 +3,10 @@ import { h, dropzone, loadBitmap, canvas, toBlob, download, field, select, num, 
 
 export function mount(root) {
   let src = null, name = "image", srcW = 0, srcH = 0;
-  const st = { rot: 0, fh: false, fv: false, crop: null, outW: 0, outH: 0, lock: true, wm: "", wmPos: "br", wmSize: 4, wmAlpha: 0.5, wmColor: "#ffffff", fmt: "png", q: 0.92 };
+  const st = { rot: 0, fh: false, fv: false, crop: null, outW: 0, outH: 0, lock: true, wm: "", wmPos: "br", wmSize: 4, wmAlpha: 0.5, wmColor: "#ffffff", fmt: "png", q: 0.92, bri: 100, con: 100, sat: 100, hue: 0, sharp: 0 };
+  const filterStr = () => `brightness(${st.bri}%) contrast(${st.con}%) saturate(${st.sat}%) hue-rotate(${st.hue}deg)`;
+  // 언샤프 마스크: 원본 - 블러 를 더한다
+  function unsharp(c, amount) { if (!amount) return; const ctx = c.getContext("2d"); const b = canvas(c.width, c.height); const bc = b.getContext("2d"); bc.filter = "blur(1.2px)"; bc.drawImage(c, 0, 0); const o = ctx.getImageData(0, 0, c.width, c.height), bl = bc.getImageData(0, 0, c.width, c.height); const k = amount / 100; for (let i = 0; i < o.data.length; i++) { if ((i & 3) === 3) continue; o.data[i] = o.data[i] + (o.data[i] - bl.data[i]) * k; } ctx.putImageData(o, 0, 0); }
   const view = h("canvas"); const wrap = h("div", { class: "canvas-wrap checker" }, view);
   const meta = h("div", { class: "meta" });
   const wIn = num(0, { min: 1, max: 16384, onInput: (v) => { st.outW = v; if (st.lock) { st.outH = Math.round(v * baseH() / baseW()); hIn.value = st.outH; } } });
@@ -31,7 +34,8 @@ export function mount(root) {
     const crop = st.crop || [0, 0, rw, rh];
     const ow = full ? st.outW : Math.min(st.outW, 1600), oh = full ? st.outH : Math.round(Math.min(st.outW, 1600) * st.outH / st.outW);
     const o = canvas(ow, oh), oc = o.getContext("2d"); oc.imageSmoothingQuality = "high";
-    oc.drawImage(a, crop[0], crop[1], crop[2], crop[3], 0, 0, ow, oh);
+    oc.filter = filterStr(); oc.drawImage(a, crop[0], crop[1], crop[2], crop[3], 0, 0, ow, oh); oc.filter = "none";
+    unsharp(o, st.sharp);
     if (st.wm) {
       const fs = Math.max(10, Math.round(Math.min(ow, oh) * st.wmSize / 100));
       oc.font = `600 ${fs}px "DM Sans", sans-serif`; oc.globalAlpha = st.wmAlpha; oc.fillStyle = st.wmColor; oc.shadowColor = "rgba(0,0,0,.5)"; oc.shadowBlur = fs / 6;
@@ -81,6 +85,13 @@ export function mount(root) {
       h("div", { class: "row" }, field("가로", wIn), field("세로", hIn)),
       check("비율 고정", true, (v) => st.lock = v),
       h("div", { class: "cm-tools" }, ...[50, 25, 200].map((p) => button(`${p}%`, () => { st.outW = Math.round(baseW() * p / 100); st.outH = Math.round(baseH() * p / 100); wIn.value = st.outW; hIn.value = st.outH; draw(); }, "btn sm")), button("원본", () => { resetSize(); draw(); }, "btn sm")),
+      h("h3", {}, "색 보정"),
+      field("밝기", range(100, { min: 30, max: 200, onInput: (v) => { st.bri = v; draw(); } })),
+      field("대비", range(100, { min: 30, max: 200, onInput: (v) => { st.con = v; draw(); } })),
+      field("채도", range(100, { min: 0, max: 250, onInput: (v) => { st.sat = v; draw(); } })),
+      field("색상 회전", range(0, { min: -180, max: 180, onInput: (v) => { st.hue = v; draw(); } })),
+      field("선명하게 (언샤프)", range(0, { min: 0, max: 150, onInput: (v) => { st.sharp = v; draw(); } })),
+      button("보정 초기화", () => { Object.assign(st, { bri: 100, con: 100, sat: 100, hue: 0, sharp: 0 }); root.querySelectorAll(".controls input[type=range]").forEach((r, i) => { if (i < 5) r.value = [100, 100, 100, 0, 0][i]; }); draw(); }, "btn sm"),
       h("h3", {}, "워터마크"),
       field("문구", h("input", { type: "text", placeholder: "비우면 없음", oninput: (e) => { st.wm = e.target.value; draw(); } })),
       h("div", { class: "row" }, field("위치", select([["br", "우하"], ["bl", "좌하"], ["tr", "우상"], ["tl", "좌상"], ["c", "가운데"]], st.wmPos, (v) => { st.wmPos = v; draw(); })), field("색", h("input", { type: "color", value: st.wmColor, oninput: (e) => { st.wmColor = e.target.value; draw(); } }))),

@@ -1,5 +1,6 @@
 // 모자이크 — 브러시 / 사각 · 픽셀화 · 블러 · 검정 · 되돌리기
 import { h, dropzone, loadBitmap, canvas, toBlob, download, field, select, num, button, range, baseName, isImage, mimeOf, toast, handoff } from "../ui.js";
+import { detectFaces, disposeFaceWorker } from "../facedet.js";
 
 export function mount(root) {
   let src = null, name = "image", work = null, undo = [];
@@ -47,10 +48,25 @@ export function mount(root) {
   function doUndo() { const c = undo.pop(); if (!c) return; work = c; render(); }
   document.addEventListener("keydown", onKey);
   async function save() { if (!work) return; download(await toBlob(work, mimeOf(st.fmt), 0.92), `${name}_mosaic.${st.fmt}`); toast("저장", "ok"); }
+  let facePad = 0.25, faceThresh = 0.6;
+  async function autoFaces() {
+    if (!src) return; faceBtn.disabled = true; meta.textContent = "얼굴 찾는 중 (첫 실행은 모델 1.2MB 로드)…";
+    try {
+      const faces = await detectFaces(src, { thresh: faceThresh });
+      if (!faces.length) { meta.textContent = "얼굴을 못 찾았다. 감지 문턱을 낮추거나 손으로."; faceBtn.disabled = false; return; }
+      snapshot();
+      for (const f of faces) { const px = f.w * facePad, py = f.h * facePad; if (st.shape === "brush" && st.mode !== "black") applyRect(f.x - px, f.y - py, f.w + px * 2, f.h + py * 2); else applyRect(f.x - px, f.y - py, f.w + px * 2, f.h + py * 2); }
+      render(); meta.textContent = `얼굴 ${faces.length}개 가림 (신뢰도 ${faces.map((f) => Math.round(f.p * 100) + "%").join(", ")})`;
+    } catch (e) { toast("감지 실패: " + e.message, "warn"); meta.textContent = e.message; }
+    faceBtn.disabled = false;
+  }
+  const faceBtn = button("얼굴 자동 감지 → 가리기", autoFaces, "btn primary full");
   const seg = (opts, key) => { const s = h("div", { class: "seg" }); for (const [v, t] of opts) s.append(h("button", { type: "button", class: st[key] === v ? "on" : "", onclick: (e) => { st[key] = v; [...s.children].forEach((b) => b.classList.toggle("on", b === e.target)); } }, t)); return s; };
   root.append(h("div", { class: "tool" },
     h("div", { class: "panel" }, dz, wrap, meta),
     h("div", { class: "panel controls" },
+      faceBtn,
+      h("div", { class: "row" }, field("얼굴 여유 %", num(25, { min: 0, max: 100, onInput: (v) => facePad = v / 100 })), field("감지 문턱", num(60, { min: 30, max: 95, onInput: (v) => faceThresh = v / 100 }))),
       field("효과", seg([["pixel", "픽셀"], ["blur", "블러"], ["black", "검정"]], "mode")),
       field("도구", seg([["brush", "브러시"], ["rect", "사각"]], "shape")),
       field("브러시 크기", range(st.size, { min: 10, max: 400, onInput: (v) => st.size = v })),
@@ -59,5 +75,5 @@ export function mount(root) {
       field("형식", select([["png", "PNG"], ["jpg", "JPG"], ["webp", "WEBP"]], st.fmt, (v) => st.fmt = v)),
       button("저장", save, "btn primary full"))));
   const ho = handoff.take(); if (ho?.files?.[0]) load(ho.files[0]);
-  return () => { dz.destroy(); document.removeEventListener("keydown", onKey); };
+  return () => { dz.destroy(); document.removeEventListener("keydown", onKey); disposeFaceWorker(); };
 }

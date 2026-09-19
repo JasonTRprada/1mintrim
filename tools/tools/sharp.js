@@ -5,6 +5,7 @@
 //   micro= 5×5 창 표준편차의 중앙값 (피부 결 · 밀랍이면 낮다)
 // 참조 기준(메모리 Comp1 QC 점수표): 얼굴 ROI lap≈137 · halo≤0.025 · micro≥2.7 @1280
 import { h, dropzone, loadBitmap, loadVideo, frameAt, canvas, toGray, field, select, num, button, progress, download, isImage, isVideo, toast, check, clamp } from "../ui.js";
+import { detectFaces, disposeFaceWorker } from "../facedet.js";
 
 const W = 1280;
 function laplacian(g, w, hh) { // valid 영역 (w-2)x(h-2)
@@ -61,7 +62,7 @@ function verdict(m) {
 }
 
 export function mount(root) {
-  const st = { roiMode: "auto", vidN: 5, manual: null };
+  const st = { roiMode: "face", vidN: 5, manual: null };
   const rows = [];
   const tbody = h("tbody");
   const prog = progress();
@@ -75,8 +76,13 @@ export function mount(root) {
     const img = ctx.getImageData(0, 0, W, hh);
     return { img, g: toGray(img), w: W, hh, canvas: c };
   }
-  function pickRoi(s) {
+  async function pickRoi(s) {
     if (st.roiMode === "manual" && st.manual) { const [x, y, w, hh] = st.manual; return [clamp(x, 0, s.w - 8), clamp(y, 0, s.hh - 8), clamp(w, 8, s.w - x), clamp(hh, 8, s.hh - y)]; }
+    if (st.roiMode === "face") { // 얼굴 검출 → 가장 큰 얼굴을 정사각(최소 192)으로
+      try { const faces = await detectFaces(s.canvas, { thresh: 0.5 }); if (faces.length) { const f = faces.sort((a, b) => b.w * b.h - a.w * a.h)[0]; const side = Math.max(192, Math.round(Math.max(f.w, f.h) * 1.1)); const cx = f.x + f.w / 2, cy = f.y + f.h / 2;
+        const x = clamp(Math.round(cx - side / 2), 0, Math.max(0, s.w - side)), y = clamp(Math.round(cy - side / 2), 0, Math.max(0, s.hh - side)); return [x, y, Math.min(side, s.w - x), Math.min(side, s.hh - y)]; } }
+      catch (e) { toast("얼굴 검출 실패: " + e.message, "warn"); }
+    }
     if (st.roiMode !== "full") { const r = skinRoi(s.img); if (r) return r; }
     return [0, 0, s.w, s.hh];
   }
@@ -97,14 +103,14 @@ export function mount(root) {
       try {
         if (isImage(f)) {
           const bmp = await loadBitmap(f); const s = await scaled(bmp, bmp.width, bmp.height); bmp.close?.();
-          const roi = pickRoi(s); showPreview(s, roi); addRow(f.name, metrics(s.g, s.w, roi), roi, "");
+          const roi = await pickRoi(s); showPreview(s, roi); addRow(f.name, metrics(s.g, s.w, roi), roi, "");
         } else if (isVideo(f)) {
           const v = await loadVideo(f); const n = st.vidN, ms = [];
           let roiLast = null;
           for (let i = 0; i < n; i++) {
             prog.set((k - 1 + (i + 1) / n) / files.length, `${f.name} 프레임 ${i + 1}/${n}`);
             const t = (v.duration * (i + 0.5)) / n; const c = await frameAt(v, t);
-            const s = await scaled(c, c.width, c.height); const roi = pickRoi(s); roiLast = roi; showPreview(s, roi); ms.push(metrics(s.g, s.w, roi));
+            const s = await scaled(c, c.width, c.height); const roi = await pickRoi(s); roiLast = roi; showPreview(s, roi); ms.push(metrics(s.g, s.w, roi));
           }
           URL.revokeObjectURL(v.src);
           const med = { lap: median(ms.map((m) => m.lap)), halo: median(ms.map((m) => m.halo)), micro: median(ms.map((m) => m.micro)) };
@@ -121,7 +127,7 @@ export function mount(root) {
   preview.addEventListener("pointerup", (e) => { if (!drag) return; const r = preview.getBoundingClientRect(); const sx = preview.width / r.width; const x = (e.clientX - r.left) * sx, y = (e.clientY - r.top) * sx;
     const roi = [Math.round(Math.min(drag[0], x)), Math.round(Math.min(drag[1], y)), Math.round(Math.abs(x - drag[0])), Math.round(Math.abs(y - drag[1]))]; drag = null;
     if (roi[2] > 8 && roi[3] > 8) { st.manual = roi; st.roiMode = "manual"; roiSel.value = "manual"; toast(`ROI ${roi.join(",")} — 다음 파일부터 적용`, "ok"); } });
-  const roiSel = select([["auto", "자동 (피부 192×192)"], ["full", "전체 화면"], ["manual", "드래그한 ROI"]], st.roiMode, (v) => st.roiMode = v);
+  const roiSel = select([["face", "얼굴 검출 (가장 큰 얼굴 · 권장)"], ["auto", "피부 색 휴리스틱 192×192 (파이썬 원식)"], ["full", "전체 화면"], ["manual", "드래그한 ROI"]], st.roiMode, (v) => st.roiMode = v);
   function exportCsv() {
     const lines = ["name,lap,halo,micro,roi,note", ...rows.map((r) => [r.name, r.lap.toFixed(2), r.halo.toFixed(5), r.micro.toFixed(4), r.roi, r.note].map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))];
     download(new Blob(["﻿" + lines.join("\n")], { type: "text/csv" }), `sharp_qc_${Date.now()}.csv`);
@@ -136,5 +142,5 @@ export function mount(root) {
       button("표 비우기", () => { rows.length = 0; tbody.replaceChildren(); }),
       prog,
       h("div", { class: "help" }, "기준(Comp1 QC 점수표): 얼굴 ROI ", h("code", {}, "lap≈137"), " · ", h("code", {}, "halo≤0.025"), " · ", h("code", {}, "micro≥2.7"), " @1280. 리사이즈는 브라우저 보간(파이썬 LANCZOS 와 소수점 차이)이라 절대값은 ±수 % 어긋날 수 있다. 같은 도구 안에서 상대 비교로 쓴다."))));
-  return () => dz.destroy();
+  return () => { dz.destroy(); disposeFaceWorker(); };
 }

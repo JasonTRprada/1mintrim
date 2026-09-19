@@ -99,6 +99,10 @@ h1, h2, h3 { font-family: "Playfair Display", "Noto Serif KR", Georgia, serif; f
 .canvas-wrap canvas, .canvas-wrap img, .canvas-wrap video { max-width: 100%; max-height: 72vh; display: block; }
 .canvas-wrap.tight canvas { max-height: none; }
 .meta { font-size: 12px; color: var(--muted); margin-top: 8px; }
+.zoom-bar { display: flex; align-items: center; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.zoom-label { min-width: 46px; text-align: center; font-size: 12px; font-variant-numeric: tabular-nums; color: #6a5d80; }
+.zoom-hint { font-size: 11px; color: #b0a8c0; margin-left: 4px; }
+.canvas-wrap.zoomed { outline: 2px solid #d9cbe8; }
 
 .pwrap { display: grid; gap: 4px; }
 .ptrack { height: 6px; background: #ece5f2; border-radius: 4px; overflow: hidden; }

@@ -1,11 +1,12 @@
 // 사진 속 작은 표시 지우기 — 브러시/사각으로 마스크 → 주변 결 복제(PatchMatch 축약) 또는 부드럽게 채우기
 // 자동 감지: 네 모서리·가장자리 띠에서 고대비 얇은 획(워터마크·글자) 후보를 찾아 마스크로 제안한다
-import { h, dropzone, loadBitmap, canvas, toBlob, download, field, select, button, range, baseName, isImage, mimeOf, toast, handoff, progress, toGray } from "../ui.js";
+import { h, dropzone, loadBitmap, canvas, toBlob, download, field, select, button, range, baseName, isImage, mimeOf, toast, handoff, progress, toGray, zoomable } from "../ui.js";
 
 export function mount(root) {
   let src = null, name = "image", mask = null /* Uint8 w*h, 1=지울 곳 */, result = null, undo = [];
   const st = { size: 40, mode: "patch", shape: "brush", fmt: "png", corners: 22 };
   const view = h("canvas"); const wrap = h("div", { class: "canvas-wrap" }, view);
+  const zoomBar = zoomable(wrap, view);
   const meta = h("div", { class: "meta" }, "지울 곳을 브러시로 칠하거나 사각으로 잡고 「채우기」");
   const prog = progress();
   let W = 0, H = 0, drawing = false, rectStart = null, showMask = true;
@@ -111,7 +112,7 @@ export function mount(root) {
   const seg = (opts, key, after) => { const s = h("div", { class: "seg" }); for (const [v, t] of opts) s.append(h("button", { type: "button", class: st[key] === v ? "on" : "", onclick: (e) => { st[key] = v; [...s.children].forEach((b) => b.classList.toggle("on", b === e.target)); after?.(); } }, t)); return s; };
   let eraser = false;
   root.append(h("div", { class: "tool" },
-    h("div", { class: "panel" }, dz, wrap, meta, prog, h("p", { class: "help", style: { marginTop: "10px" } }, "「결 복제」는 주변 무늬를 가져와 메운다(워터마크·잡티·전선). 「부드럽게」는 단색 배경에서 빠르다. 넓은 영역·복잡한 배경은 ComfyUI 인페인트로.")),
+    h("div", { class: "panel" }, dz, wrap, zoomBar, meta, prog, h("p", { class: "help", style: { marginTop: "10px" } }, "「결 복제」는 주변 무늬를 가져와 메운다(워터마크·잡티·전선). 「부드럽게」는 단색 배경에서 빠르다. 넓은 영역·복잡한 배경은 ComfyUI 인페인트로.")),
     h("div", { class: "panel controls" },
       button("자동 감지 (가장자리 워터마크·글자)", autoDetect, "btn full"),
       field("감지 띠 폭 (짧은 변의 %)", range(st.corners, { min: 8, max: 50, onInput: (v) => st.corners = v })),
@@ -126,5 +127,5 @@ export function mount(root) {
       button("저장", save, "btn primary full"))));
   const paintOrig = paint;
   const ho = handoff.take(); if (ho?.files?.[0]) load(ho.files[0]);
-  return () => { dz.destroy(); document.removeEventListener("keydown", onKey); };
+  return () => { dz.destroy(); document.removeEventListener("keydown", onKey); zoomBar.destroy(); };
 }

@@ -1,11 +1,12 @@
 // 배경 제거 — 워커에서 U²-Net 마스크 → 여기서 업샘플·문턱·부드러움 → 새 배경 합성 · 브러시 보정
-import { h, dropzone, loadBitmap, canvas, toBlob, download, field, select, button, range, baseName, isImage, toast, handoff, progress, clamp } from "../ui.js";
+import { h, dropzone, loadBitmap, canvas, toBlob, download, field, select, button, range, baseName, isImage, toast, handoff, progress, clamp, zoomable } from "../ui.js";
 
 const MAXSIDE = 2048;
 export function mount(root) {
   let worker = null, src = null, name = "image", mask = null /* 320x320 Uint8 */, fixMask = null /* 원본 크기 canvas: 흰=지움 검=복원 */;
   const st = { bg: "transparent", color: "#ffffff", thresh: 30, soft: 2, brush: "erase", size: 50, fmt: "png" };
   const view = h("canvas"); const wrap = h("div", { class: "canvas-wrap checker" }, view);
+  const zoomBar = zoomable(wrap, view);
   const prog = progress(); const statusEl = h("div", { class: "meta" });
   let bgImg = null, drawing = false;
   const dz = dropzone({ accept: "image/*", multiple: false, hint: "한 장 · 긴 변 2048px 로 줄여서 처리", onFiles: ([f]) => load(f) });
@@ -87,7 +88,7 @@ export function mount(root) {
   const bgFile = h("input", { type: "file", accept: "image/*", onchange: async (e) => { const f = e.target.files[0]; if (!f) return; const b = await loadBitmap(f); bgImg = canvas(b.width, b.height); bgImg.getContext("2d").drawImage(b, 0, 0); b.close?.(); st.bg = "image"; bgSel.value = "image"; compose(); } });
   const bgSel = select([["transparent", "투명"], ["color", "단색"], ["grad1", "라벤더 그라데이션"], ["grad2", "피치 그라데이션"], ["grad3", "하늘 그라데이션"], ["image", "내 배경 사진"]], st.bg, (v) => { st.bg = v; if (v === "image" && !bgImg) bgFile.click(); compose(); });
   root.append(h("div", { class: "tool" },
-    h("div", { class: "panel" }, dz, wrap, statusEl, prog, h("p", { class: "help", style: { marginTop: "10px" } }, "경량 U²-Net(u2netp) 이라 머리카락·가는 물체는 거칠 수 있다. 브러시로 지우기/복원하고, 정밀 누끼가 필요하면 ComfyUI 쪽 세그먼트로.")),
+    h("div", { class: "panel" }, dz, wrap, zoomBar, statusEl, prog, h("p", { class: "help", style: { marginTop: "10px" } }, "경량 U²-Net(u2netp) 이라 머리카락·가는 물체는 거칠 수 있다. 확대해서 브러시로 지우기/복원하고, 정밀 누끼가 필요하면 ComfyUI 쪽 세그먼트로.")),
     h("div", { class: "panel controls" }, runBtn,
       field("새 배경", bgSel), field("단색", h("input", { type: "color", value: st.color, oninput: (e) => { st.color = e.target.value; st.bg = "color"; bgSel.value = "color"; compose(); } })), field("배경 사진", bgFile),
       field("제거 범위 (문턱)", range(st.thresh, { min: 0, max: 90, onInput: (v) => { st.thresh = v; compose(); } })),
@@ -99,5 +100,5 @@ export function mount(root) {
       field("형식", select([["png", "PNG · 투명 유지"], ["webp", "WEBP · 투명 유지"], ["jpg", "JPG · 투명은 흰색"]], st.fmt, (v) => st.fmt = v)),
       button("완성 이미지 저장", save, "btn primary full"))));
   const ho = handoff.take(); if (ho?.files?.[0]) load(ho.files[0]);
-  return () => { dz.destroy(); worker?.terminate(); };
+  return () => { dz.destroy(); worker?.terminate(); zoomBar.destroy(); };
 }

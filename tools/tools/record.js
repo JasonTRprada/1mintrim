@@ -10,7 +10,17 @@ export function mount(root, ctx) {
   function mime() { for (const m of ["video/webm;codecs=vp9", "video/webm;codecs=vp8", "video/webm", "video/mp4"]) if (MediaRecorder.isTypeSupported(m)) return m; return ""; }
   async function start() {
     try { stream = await navigator.mediaDevices.getDisplayMedia({ video: { frameRate: st.fps }, audio: st.audio }); }
-    catch (e) { return toast(e.name === "NotAllowedError" ? "화면 선택을 취소했다" : e.message, "warn"); }
+    catch (e) {
+      // 앱 내장 브라우저(Claude 브라우저 패널·일부 웹뷰)는 화면 캡처를 막는다 → 기본 브라우저로 열도록 안내
+      const blocked = e.name === "NotAllowedError" || e.name === "NotSupportedError" || e.name === "SecurityError";
+      stage.replaceChildren(h("div", { class: "help", style: { padding: "18px", textAlign: "center" } },
+        h("p", { style: { color: "#a2632a", fontWeight: 600, margin: "0 0 8px" } }, blocked ? "이 브라우저에서 화면 캡처가 거부됐다." : "화면 캡처 실패: " + e.message),
+        h("p", { style: { margin: "0 0 12px" } }, "앱 안에 내장된 브라우저(예: Claude 브라우저 패널, 카카오·인스타 인앱 브라우저)는 화면·창 공유를 막는다. Chrome · Edge · Firefox 에서 같은 주소를 열면 된다."),
+        h("div", { class: "cm-tools", style: { justifyContent: "center" } },
+          button("주소 복사", () => { navigator.clipboard?.writeText(location.href); toast("주소 복사됨 — 기본 브라우저에 붙여넣기", "ok"); }, "btn sm primary"),
+          h("a", { class: "btn sm", href: location.href, target: "_blank", rel: "noopener" }, "새 창으로 열기 ↗"))));
+      return;
+    }
     chunks = []; blob = null;
     rec = new MediaRecorder(stream, { mimeType: mime(), videoBitsPerSecond: { high: 12e6, mid: 6e6, low: 2.5e6 }[st.quality] });
     rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };

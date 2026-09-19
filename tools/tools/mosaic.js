@@ -1,11 +1,12 @@
 // 모자이크 — 브러시 / 사각 · 픽셀화 · 블러 · 검정 · 되돌리기
-import { h, dropzone, loadBitmap, canvas, toBlob, download, field, select, num, button, range, baseName, isImage, mimeOf, toast, handoff } from "../ui.js";
+import { h, dropzone, loadBitmap, canvas, toBlob, download, field, select, num, button, range, baseName, isImage, mimeOf, toast, handoff, zoomable } from "../ui.js";
 import { detectFaces, disposeFaceWorker } from "../facedet.js";
 
 export function mount(root) {
   let src = null, name = "image", work = null, undo = [];
   const st = { mode: "pixel", shape: "brush", size: 60, strength: 12, fmt: "png" };
   const view = h("canvas"); const wrap = h("div", { class: "canvas-wrap" }, view);
+  const zoomBar = zoomable(wrap, view);
   const meta = h("div", { class: "meta" }, "브러시: 드래그로 칠한다 · 사각: 드래그로 영역을 잡는다");
   let drawing = false, rectStart = null, stroke = [];
   const dz = dropzone({ accept: "image/*", multiple: false, onFiles: ([f]) => load(f) });
@@ -63,7 +64,7 @@ export function mount(root) {
   const faceBtn = button("얼굴 자동 감지 → 가리기", autoFaces, "btn primary full");
   const seg = (opts, key) => { const s = h("div", { class: "seg" }); for (const [v, t] of opts) s.append(h("button", { type: "button", class: st[key] === v ? "on" : "", onclick: (e) => { st[key] = v; [...s.children].forEach((b) => b.classList.toggle("on", b === e.target)); } }, t)); return s; };
   root.append(h("div", { class: "tool" },
-    h("div", { class: "panel" }, dz, wrap, meta),
+    h("div", { class: "panel" }, dz, wrap, zoomBar, meta),
     h("div", { class: "panel controls" },
       faceBtn,
       h("div", { class: "row" }, field("얼굴 여유 %", num(25, { min: 0, max: 100, onInput: (v) => facePad = v / 100 })), field("감지 문턱", num(60, { min: 30, max: 95, onInput: (v) => faceThresh = v / 100 }))),
@@ -75,5 +76,5 @@ export function mount(root) {
       field("형식", select([["png", "PNG"], ["jpg", "JPG"], ["webp", "WEBP"]], st.fmt, (v) => st.fmt = v)),
       button("저장", save, "btn primary full"))));
   const ho = handoff.take(); if (ho?.files?.[0]) load(ho.files[0]);
-  return () => { dz.destroy(); document.removeEventListener("keydown", onKey); disposeFaceWorker(); };
+  return () => { dz.destroy(); document.removeEventListener("keydown", onKey); disposeFaceWorker(); zoomBar.destroy(); };
 }

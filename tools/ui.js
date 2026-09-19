@@ -230,6 +230,29 @@ export async function frameAt(v, t, w, hh) {
   return c;
 }
 
+// ---------- 확대·축소·이동 (브러시 도구 공용) ----------
+// wrap 안의 canvas 에 CSS transform 을 건다. 도구 쪽 좌표 변환은 getBoundingClientRect 기반이라 그대로 맞는다.
+// 휠=커서 기준 줌 · 가운데 버튼 / Space+드래그 / Alt+드래그 = 이동 · 툴바(−·%·+·맞춤) 반환
+export function zoomable(wrap, cv, { min = 0.25, max = 12 } = {}) {
+  let z = 1, tx = 0, ty = 0, panning = null, space = false;
+  wrap.style.overflow = "hidden"; wrap.style.touchAction = "none"; cv.style.transformOrigin = "0 0"; cv.style.willChange = "transform";
+  const label = h("span", { class: "zoom-label" }, "100%");
+  const apply = () => { cv.style.transform = `translate(${tx}px, ${ty}px) scale(${z})`; label.textContent = `${Math.round(z * 100)}%`; wrap.classList.toggle("zoomed", z !== 1 || tx || ty); };
+  const fit = () => { z = 1; tx = ty = 0; apply(); };
+  const zoomAt = (f, cx, cy) => { const r = wrap.getBoundingClientRect(); const px = cx - r.left, py = cy - r.top; const nz = clamp(z * f, min, max); const k = nz / z; tx = px - (px - tx) * k; ty = py - (py - ty) * k; z = nz; apply(); };
+  wrap.addEventListener("wheel", (e) => { e.preventDefault(); zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX, e.clientY); }, { passive: false });
+  const onKey = (e) => { if (e.code === "Space" && !["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) { space = e.type === "keydown"; wrap.style.cursor = space ? "grab" : ""; if (space) e.preventDefault(); } };
+  document.addEventListener("keydown", onKey); document.addEventListener("keyup", onKey);
+  wrap.addEventListener("pointerdown", (e) => { if (e.button === 1 || space || e.altKey) { e.preventDefault(); e.stopPropagation(); panning = { x: e.clientX, y: e.clientY, tx, ty }; try { wrap.setPointerCapture(e.pointerId); } catch {} wrap.style.cursor = "grabbing"; } }, true);
+  wrap.addEventListener("pointermove", (e) => { if (!panning) return; e.stopPropagation(); tx = panning.tx + e.clientX - panning.x; ty = panning.ty + e.clientY - panning.y; apply(); }, true);
+  wrap.addEventListener("pointerup", (e) => { if (!panning) return; e.stopPropagation(); panning = null; wrap.style.cursor = space ? "grab" : ""; }, true);
+  wrap.addEventListener("dblclick", (e) => { if (e.altKey) fit(); });
+  const bar = h("div", { class: "zoom-bar" }, button("−", () => { const r = wrap.getBoundingClientRect(); zoomAt(1 / 1.25, r.left + r.width / 2, r.top + r.height / 2); }, "btn sm"), label, button("+", () => { const r = wrap.getBoundingClientRect(); zoomAt(1.25, r.left + r.width / 2, r.top + r.height / 2); }, "btn sm"), button("맞춤", fit, "btn sm"), h("span", { class: "zoom-hint" }, "휠 줌 · 가운데버튼/Space 드래그 이동"));
+  bar.fit = fit; bar.destroy = () => { document.removeEventListener("keydown", onKey); document.removeEventListener("keyup", onKey); };
+  bar.isPanning = () => !!panning || space;
+  return bar;
+}
+
 // 로컬 폴더 저장 (File System Access) — 없으면 null
 export async function pickDirectory(mode = "read") {
   if (!window.showDirectoryPicker) return null;

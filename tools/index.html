@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#8370a8">
+  <title>Workstation Tools — 브라우저에서 끝나는 이미지·영상 도구 | 1mintrim</title>
+  <meta name="description" content="배경 제거, 모자이크, 키프레임 리사이즈, 컨택트 시트, 영상→스틸/GIF, 화면 녹화, 선명도 QC, 검수 갤러리, QR, PDF 묶기, 파일명 일괄 변경. 업로드 없음, 서버 없음. 한 번 열면 오프라인에서도 동작합니다.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%238370a8'/%3E%3Ctext x='32' y='42' font-size='30' text-anchor='middle' fill='%23fff'%3E%E2%9A%99%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500&display=swap" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="../">
+        <span class="brand-mark">⚙</span>
+        <span><strong>Workstation Tools</strong><small>JASON'S WORKSTATION · 04</small></span>
+      </a>
+      <nav id="nav" aria-label="도구"></nav>
+      <div class="sidebar-foot">
+        <b>서버 없음.</b> 사진·영상은 이 브라우저 밖으로 나가지 않습니다.<br>
+        한 번 열어두면 <span id="offline-state">오프라인 준비 중…</span>
+      </div>
+    </aside>
+    <main class="main" id="main">
+      <button class="btn menu-btn" id="menu-btn" type="button">☰ 도구 목록</button>
+      <div id="view"></div>
+    </main>
+  </div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -6,17 +6,36 @@ const root = __dirname;
 const port = 8765;
 
 const mime = {
-  ".html": "text/html",
+  ".html": "text/html; charset=utf-8",
   ".css": "text/css",
   ".js": "text/javascript",
+  ".mjs": "text/javascript",
   ".wasm": "application/wasm",
+  ".json": "application/json",
+  ".webmanifest": "application/manifest+json",
+  ".onnx": "application/octet-stream",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".gif": "image/gif",
+  ".svg": "image/svg+xml",
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
+  ".txt": "text/plain; charset=utf-8",
+  ".md": "text/plain; charset=utf-8",
 };
 
 http
   .createServer((req, res) => {
-    let filePath = req.url.split("?")[0];
-    if (filePath === "/") filePath = "/index.html";
-    const full = path.join(root, filePath);
+    let filePath = decodeURIComponent(req.url.split("?")[0]);
+    if (filePath.endsWith("/")) filePath += "index.html";
+    let full = path.join(root, filePath);
+    // Cloudflare Pages 와 같은 clean URL: /gif → gif.html, /tools → tools/
+    if (!fs.existsSync(full)) {
+      if (fs.existsSync(full + ".html")) full += ".html";
+      else if (fs.existsSync(path.join(full, "index.html"))) { res.writeHead(301, { Location: filePath + "/" }); return res.end(); }
+    }
     fs.readFile(full, (err, data) => {
       if (err) {
         res.writeHead(404);

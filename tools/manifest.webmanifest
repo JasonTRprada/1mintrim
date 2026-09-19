@@ -1,0 +1,14 @@
+{
+  "name": "Workstation Tools — 1mintrim",
+  "short_name": "WS Tools",
+  "description": "브라우저 안에서 끝나는 이미지·영상 도구. 업로드 없음, 오프라인 동작.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f2f7",
+  "theme_color": "#8370a8",
+  "lang": "ko",
+  "icons": [
+    { "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%238370a8'/%3E%3Ctext x='32' y='42' font-size='30' text-anchor='middle' fill='%23fff'%3E%E2%9A%99%3C/text%3E%3C/svg%3E", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

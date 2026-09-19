@@ -2,6 +2,7 @@
 importScripts("vendor/ort.min.js");
 ort.env.wasm.wasmPaths = new URL("vendor/", self.location.href).href;
 ort.env.wasm.numThreads = 1;
+ort.env.logLevel = "error"; // 이 모델은 옛 exporter 라 initializer 경고가 수백 줄 뜬다
 let session = null;
 const W = 320, H = 240;
 

@@ -1,10 +1,10 @@
 // 오프라인 캐시 — 핵심 파일은 설치 때, 벤더(모델·wasm)는 첫 사용 때 캐시
-const VERSION = "wt-v2";
+const VERSION = "wt-v3";
 const CORE = ["./", "index.html", "app.js", "ui.js", "style.css", "manifest.webmanifest", "bg-worker.js", "face-worker.js", "facedet.js",
   ...["gallery", "resize", "sheet", "frames", "sharp", "compare", "pnginfo", "palette", "edit", "canvas", "split", "mosaic", "cleanup", "bg", "sign", "gif", "record", "rename", "pdf", "qr", "roulette"].map((t) => `tools/${t}.js`),
   "vendor/gifenc.esm.js", "vendor/qrcode.js"];
 self.addEventListener("install", (e) => {
-  e.waitUntil((async () => { const c = await caches.open(VERSION); await c.addAll(CORE); self.skipWaiting(); })());
+  e.waitUntil((async () => { const c = await caches.open(VERSION); await c.addAll(CORE.map((p) => new Request(p, { cache: "reload" }))); self.skipWaiting(); })());
 });
 self.addEventListener("activate", (e) => {
   e.waitUntil((async () => {
@@ -20,8 +20,8 @@ self.addEventListener("fetch", (e) => {
   e.respondWith((async () => {
     const c = await caches.open(VERSION);
     const isCore = e.request.mode === "navigate" || CORE.some((p) => p !== "./" && url.pathname.endsWith("/" + p));
-    if (isCore) { // 핵심 파일: 네트워크 우선(항상 최신) → 실패하면 캐시
-      try { const r = await fetch(e.request); if (r.ok) c.put(e.request, r.clone()); return r; }
+    if (isCore) { // 핵심 파일: 네트워크 우선(항상 최신) → 실패하면 캐시. HTTP 캐시가 옛 사본을 돌려주지 않도록 재검증 강제
+      try { const r = e.request.mode === "navigate" ? await fetch(e.request) : await fetch(e.request.url, { cache: "no-cache", credentials: "same-origin" }); if (r.ok) c.put(e.request, r.clone()); return r; }
       catch { return (await c.match(e.request, { ignoreSearch: true })) || (e.request.mode === "navigate" ? c.match("index.html") : Response.error()); }
     }
     // 벤더(모델·wasm 등 큰 파일): 캐시 우선

@@ -9,7 +9,7 @@ const W = 320, H = 240;
 async function ensure() {
   if (session) return session;
   const buf = await (await fetch(new URL("vendor/face-rfb-320.onnx", self.location.href))).arrayBuffer();
-  session = await ort.InferenceSession.create(buf, { executionProviders: ["wasm"] });
+  session = await ort.InferenceSession.create(buf, { executionProviders: ["wasm"], logSeverityLevel: 3, logVerbosityLevel: 0 });
   return session;
 }
 function iou(a, b) {

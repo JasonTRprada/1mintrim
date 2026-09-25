@@ -3,7 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 const root = __dirname;
-const port = 8765;
+const port = Number(process.env.PORT || 8765);
 
 const mime = {
   ".html": "text/html; charset=utf-8",
@@ -21,6 +21,7 @@ const mime = {
   ".gif": "image/gif",
   ".svg": "image/svg+xml",
   ".mp4": "video/mp4",
+  ".mp3": "audio/mpeg",
   ".webm": "video/webm",
   ".txt": "text/plain; charset=utf-8",
   ".md": "text/plain; charset=utf-8",
